@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\smhoo\\OneDrive\\Documents\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj": {}
+    "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj": {}
   },
   "projects": {
-    "C:\\Users\\smhoo\\OneDrive\\Documents\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj": {
+    "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\smhoo\\OneDrive\\Documents\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj",
+        "projectUniqueName": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj",
         "projectName": "Proj",
-        "projectPath": "C:\\Users\\smhoo\\OneDrive\\Documents\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj",
-        "packagesPath": "C:\\Users\\smhoo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\smhoo\\OneDrive\\Documents\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\.mono\\temp\\obj\\",
+        "projectPath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Proj.csproj",
+        "packagesPath": "C:\\Users\\Steven\\.nuget\\packages\\",
+        "outputPath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\.mono\\temp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\smhoo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Steven\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net472"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,6 +37,14 @@
       "frameworks": {
         "net472": {
           "targetAlias": "net472",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            }
+          },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }

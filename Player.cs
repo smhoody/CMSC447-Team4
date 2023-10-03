@@ -1,51 +1,70 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 public class Player : KinematicBody2D
 {
     [Export] public bool right = true;
-    [Export] public int speed = 230;
-    [Export] public int dash_speed = 300;
+    [Export] public int speed = 300;
+    [Export] public int dash_speed = 700;
     [Export] public float gravity = 9.81f;
-    [Export] public float jump_power = 500f;
-    [Export] public float mass = 2f;
+    [Export] public float jump_power = 600f;
+    [Export] public float mass = 2.5f;
     [Export] public float acceleration = 20f;
 
     // member variables here
     public Vector2 velocity = new Vector2();
-    public float y_velocity;
+    public Vector2 position = new Vector2();
     private AnimatedSprite _animatedSprite;
     private RayCast2D groundray;
-    private Timer timer;
-    private int dash_accel = 25; 
-    private int dash_counter = 0; 
-    private bool dashing = false;
+    private Timer dash_timer;
+    public int frame_counter; //used to count frames to measure seconds  
+    public Queue<Vector2> recall_positions = new Queue<Vector2>();
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
+        //Get player sprite
         _animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
-        groundray = (RayCast2D) FindNode("GroundRay"); // GetNode<RayCast2D>("GroundRay");
-        groundray.CollideWithAreas = true;
-        groundray.Enabled = true; 
 
-        timer = GetNode<Timer>("Timer");
-        timer.Connect("timeout",this,"OnTimerTimeout");
+        // Get the player GroundRay (used to detect if the player is on the ground) 
+        groundray = (RayCast2D) FindNode("GroundRay"); 
+        groundray.CollideWithAreas = true; //enable collision
+        groundray.Enabled = true; //turn ray on
+
+        // Dash timer
+        dash_timer = GetNode<Timer>("Timer");
+        dash_timer.Connect("timeout",this,"OnTimerTimeout");
+
+
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta) {
-        velocity.y += gravity*mass;
-        GetInput(delta);
-        CheckAnimations(delta);
-        velocity = MoveAndSlide(velocity);
-        velocity.x = 0;
-    }
-
-    public override void _PhysicsProcess(float delta) {
         
     }
 
+    public override void _PhysicsProcess(float delta) {
+        // Apply gravity
+        velocity.y += gravity*mass;
+        
+        // Get user input
+        GetInput(delta);
+        // adjust character animations
+        CheckAnimations(delta);
+        
+        // check Recall ability 
+        ProcessRecall();
+
+    }
+
     public void GetInput(float delta) {
+        //relative speed refers to this the character speed in this frame.
+        //speed is a constant for default walking speed, but relative can
+        //change depending on if the character is dashing/rolling
+        int relative_speed = speed; 
+
+        //WALKING LOGIC--------------------------   
         if (Input.IsActionPressed("right")) {
             _animatedSprite.FlipH = false;
             velocity.x += 1;
@@ -55,36 +74,48 @@ public class Player : KinematicBody2D
             velocity.x -= 1;
         }
         
-        if (groundray.IsColliding()) {
+        //JUMP LOGIC------------------------------
+        if (groundray.IsColliding()) { //if player is on the ground
             if (Input.IsActionJustPressed("jump")) {
-                velocity.y -= jump_power;
+                velocity.y -= jump_power; // negative y-values move player up
             }
         }
 
-        if (Input.IsActionJustPressed("dash")) {
-            dashing = true;
-            timer.Start();
+        // DASH LOGIC-----------------------------
+        // if dash is activated, set flag and start timer
+        if (Input.IsActionJustPressed("dash")) 
+            dash_timer.Start();
+        if (!dash_timer.IsStopped()) { //while dashing is activated
+            relative_speed = dash_speed;
+            if (Input.IsActionPressed("up")) {velocity.y -= 10;}
+        }
+        
+        // RECALL LOGIC---------------------------
+        if (Input.IsActionJustPressed("recall") && recall_positions.Count >= 1) {
+            this.Position = recall_positions.Peek();
         }
 
-        if (dashing) {
-            dash_counter++;
-            speed = dash_speed * (dash_counter/dash_accel);
-        } else {speed = 230;}
-                    
-        velocity.x *= speed;
-        
+        //adjust horizontal speed
+        velocity.x *= relative_speed;
+        // Move character
+        velocity = MoveAndSlide(velocity);
+        velocity.x = 0; //stop movement when finished  
     }
 
     public void CheckAnimations(float delta) {
+        //if player is not on the ground, play jumping animation
         if (!groundray.IsColliding()) {
             _animatedSprite.Play("jump");
-        } else {
+        } else { //player is on the ground
+            //player is moving to the right
             if (Input.IsActionPressed("right")) {
                 _animatedSprite.Play("run");
             }
+            //player is moving to the left
             else if (Input.IsActionPressed("left")) {
                 _animatedSprite.Play("run");
             }
+            //no movement is happening, stop animations and reset frame
             else {
                 _animatedSprite.Stop();
                 _animatedSprite.Frame = 0;
@@ -92,8 +123,22 @@ public class Player : KinematicBody2D
         }
     }
 
-    private void OnTimerTimeout() {
-        dash_counter = 0;
-        dashing = false;
+    /**
+        Adjusts the queue of player position vectors in the past 3 seconds.
+        When the Recall ability is activated, it will use the vector
+        at the head of the queue and move to that location. 
+    */
+    public void ProcessRecall() {
+        frame_counter++;
+        if (frame_counter == 60) { //activate on the 60th (1 second) frame
+            frame_counter = 0; //reset counter
+            if (recall_positions.Count >= 2) {recall_positions.Dequeue();} //remove oldest position
+            recall_positions.Enqueue(this.GlobalPosition); //add latest position
+        }
+    }
+
+
+    public void OnTimerTimeout() {
+
     }
 }

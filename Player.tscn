@@ -22,7 +22,23 @@ position = Vector2( -3, 1 )
 cast_to = Vector2( 0, 18 )
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.2
 one_shot = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2( 59.14, -34.74 )
+current = true
+zoom = Vector2( 0.809, 0.703 )
+smoothing_enabled = true
+smoothing_speed = 3.0
+
+[node name="health" type="Label" parent="Camera2D"]
+margin_left = -164.0
+margin_top = -115.0
+margin_right = -121.0
+margin_bottom = -96.0
+rect_scale = Vector2( 5, 5 )
+rect_pivot_offset = Vector2( 1, 0 )
+text = "100"
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
