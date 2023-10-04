@@ -3,6 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+public struct PlayerStatus {
+    public Vector2 position;
+    public int health;
+}
+
 public class Player : KinematicBody2D
 {
     [Export] public bool right = true;
@@ -20,7 +25,10 @@ public class Player : KinematicBody2D
     private RayCast2D groundray;
     private Timer dash_timer;
     public int frame_counter; //used to count frames to measure seconds  
-    public Queue<Vector2> recall_positions = new Queue<Vector2>();
+    public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
+    public Label health_label; //visual label for health  
+    public int health = 100; //actual health value
+    public int health_tick = 60; //delete this
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -36,7 +44,9 @@ public class Player : KinematicBody2D
         dash_timer = GetNode<Timer>("Timer");
         dash_timer.Connect("timeout",this,"OnTimerTimeout");
 
-
+        // Health bar
+        Camera2D cam = GetNode<Camera2D>("Camera2D");
+        health_label = cam.GetChild<Label>(0);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -53,6 +63,13 @@ public class Player : KinematicBody2D
         // adjust character animations
         CheckAnimations(delta);
         
+        health_tick--;
+        if (health_tick == 0) {
+            health_tick = 60;
+            health--;
+            health_label.Text = health.ToString();
+        }
+
         // check Recall ability 
         ProcessRecall();
 
@@ -91,8 +108,11 @@ public class Player : KinematicBody2D
         }
         
         // RECALL LOGIC---------------------------
-        if (Input.IsActionJustPressed("recall") && recall_positions.Count >= 1) {
-            this.Position = recall_positions.Peek();
+        if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1) {
+            PlayerStatus status = recall_statuses.Peek();
+            this.Position = status.position; 
+            health = status.health;
+            health_label.Text = health.ToString();
         }
 
         //adjust horizontal speed
@@ -123,17 +143,25 @@ public class Player : KinematicBody2D
         }
     }
 
+
+
     /**
-        Adjusts the queue of player position vectors in the past 3 seconds.
+        Adjusts the queue of player position vectors in the past 2 seconds.
         When the Recall ability is activated, it will use the vector
         at the head of the queue and move to that location. 
     */
     public void ProcessRecall() {
+
         frame_counter++;
         if (frame_counter == 60) { //activate on the 60th (1 second) frame
             frame_counter = 0; //reset counter
-            if (recall_positions.Count >= 2) {recall_positions.Dequeue();} //remove oldest position
-            recall_positions.Enqueue(this.GlobalPosition); //add latest position
+            //save current info about player (position, health)
+            PlayerStatus new_status;
+            new_status.position = this.GlobalPosition;
+            new_status.health = health;
+            GD.Print(new_status.health);
+            if (recall_statuses.Count > 7) {recall_statuses.Dequeue();} //remove oldest status
+            recall_statuses.Enqueue(new_status); //add latest status
         }
     }
 

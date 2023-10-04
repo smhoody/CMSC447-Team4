@@ -29,14 +29,13 @@ one_shot = true
 offset = Vector2( 59.14, -34.74 )
 current = true
 zoom = Vector2( 0.809, 0.703 )
-smoothing_enabled = true
 smoothing_speed = 3.0
 
 [node name="health" type="Label" parent="Camera2D"]
 margin_left = -164.0
 margin_top = -115.0
-margin_right = -121.0
-margin_bottom = -96.0
+margin_right = -131.0
+margin_bottom = -99.0
 rect_scale = Vector2( 5, 5 )
 rect_pivot_offset = Vector2( 1, 0 )
 text = "100"
