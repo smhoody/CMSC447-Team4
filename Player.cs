@@ -3,8 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+
+/**
+    Object to hold player info such as global position and health 
+    (for recall ability)
+*/
 public struct PlayerStatus {
-    public Vector2 position;
+    public Vector2 position; // (x,y)
     public int health;
 }
 
@@ -17,13 +22,21 @@ public class Player : KinematicBody2D
     [Export] public float jump_power = 600f;
     [Export] public float mass = 2.5f;
     [Export] public float acceleration = 20f;
+    [Export] public float wall_slide_animation = 10f;
+    [Export] public float max_wall_slide_speed = 120f;
+
 
     // member variables here
     public Vector2 velocity = new Vector2();
     public Vector2 position = new Vector2();
     private AnimatedSprite _animatedSprite;
     private RayCast2D groundray;
-    private Timer dash_timer;
+    private RayCast2D leftray;
+    private RayCast2D rightray;
+
+    private Timer dash_timer; //for adjusting dash duration
+    private Timer dash_cooldown; //for adjusting dash duration
+    private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
     public Label health_label; //visual label for health  
@@ -32,17 +45,23 @@ public class Player : KinematicBody2D
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
-        //Get player sprite
+        // Get player sprite
         _animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
-        // Get the player GroundRay (used to detect if the player is on the ground) 
-        groundray = (RayCast2D) FindNode("GroundRay"); 
-        groundray.CollideWithAreas = true; //enable collision
-        groundray.Enabled = true; //turn ray on
+        // Get the groundray (used to detect if the player is on the ground) 
+        groundray = GetNode<RayCast2D>("GroundRay"); 
 
-        // Dash timer
-        dash_timer = GetNode<Timer>("Timer");
-        dash_timer.Connect("timeout",this,"OnTimerTimeout");
+        // Get left/right rays (to detect if player is colliding on the left or right)
+        leftray = GetNode<RayCast2D>("LeftRay"); 
+        rightray = GetNode<RayCast2D>("RightRay"); 
+
+        // Dash duration timer
+        dash_timer = GetNode<Timer>("DashDuration");
+
+        // Dash cooldown timer
+        dash_cooldown = GetNode<Timer>("DashCooldown");
+        dash_cooldown.WaitTime = 3; //cooldown for dash
+        dash_cooldown.OneShot = true; 
 
         // Health bar
         Camera2D cam = GetNode<Camera2D>("Camera2D");
@@ -55,14 +74,19 @@ public class Player : KinematicBody2D
     }
 
     public override void _PhysicsProcess(float delta) {
-        // Apply gravity
-        velocity.y += gravity*mass;
+
+        // Check Wall jump/sliding status 
+        CheckWall(delta);
         
         // Get user input
         GetInput(delta);
+        
         // adjust character animations
         CheckAnimations(delta);
         
+        // check Recall ability 
+        ProcessRecall();
+
         health_tick--;
         if (health_tick == 0) {
             health_tick = 60;
@@ -70,8 +94,7 @@ public class Player : KinematicBody2D
             health_label.Text = health.ToString();
         }
 
-        // check Recall ability 
-        ProcessRecall();
+        
 
     }
 
@@ -92,27 +115,34 @@ public class Player : KinematicBody2D
         }
         
         //JUMP LOGIC------------------------------
-        if (groundray.IsColliding()) { //if player is on the ground
-            if (Input.IsActionJustPressed("jump")) {
-                velocity.y -= jump_power; // negative y-values move player up
+        if (Input.IsActionJustPressed("jump")) {
+            if (groundray.IsColliding()) { //if player is on the ground
+                velocity.y = -jump_power; // negative y-values move player up
+            }
+            else if (IsOnWall() && can_wall_jump) { //if player is on a wall
+                velocity.y = -jump_power;
+                can_wall_jump = false; //only allow 1 jump once the player hits the wall
             }
         }
+        if (!IsOnWall()) {can_wall_jump = true;} //reset wall-jump flag when player leaves wall
 
         // DASH LOGIC-----------------------------
         // if dash is activated, set flag and start timer
-        if (Input.IsActionJustPressed("dash")) 
-            dash_timer.Start();
+        if (Input.IsActionJustPressed("dash") && dash_cooldown.IsStopped()) {
+            dash_timer.Start(); //start dash duration timer (how long dash lasts)
+            dash_cooldown.Start(); //start dash cooldown
+        }
         if (!dash_timer.IsStopped()) { //while dashing is activated
             relative_speed = dash_speed;
-            if (Input.IsActionPressed("up")) {velocity.y -= 10;}
+            if (Input.IsActionPressed("up")) {velocity.y -= 10;} //apply upward momentum if moving up
         }
         
         // RECALL LOGIC---------------------------
         if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1) {
-            PlayerStatus status = recall_statuses.Peek();
-            this.Position = status.position; 
-            health = status.health;
-            health_label.Text = health.ToString();
+            PlayerStatus status = recall_statuses.Peek(); //get oldest status
+            this.Position = status.position; //set player position to the position in that status
+            health = status.health; //set player health to what it was in that status
+            health_label.Text = health.ToString(); //update health label
         }
 
         //adjust horizontal speed
@@ -125,7 +155,13 @@ public class Player : KinematicBody2D
     public void CheckAnimations(float delta) {
         //if player is not on the ground, play jumping animation
         if (!groundray.IsColliding()) {
-            _animatedSprite.Play("jump");
+            if (IsOnWall()) {
+                _animatedSprite.Stop(); //stop all animations
+                _animatedSprite.Animation = "jump"; //set animation type
+                _animatedSprite.Frame = 0; //set frame
+            } else {
+                _animatedSprite.Play("jump");
+            }
         } else { //player is on the ground
             //player is moving to the right
             if (Input.IsActionPressed("right")) {
@@ -151,7 +187,6 @@ public class Player : KinematicBody2D
         at the head of the queue and move to that location. 
     */
     public void ProcessRecall() {
-
         frame_counter++;
         if (frame_counter == 60) { //activate on the 60th (1 second) frame
             frame_counter = 0; //reset counter
@@ -159,14 +194,21 @@ public class Player : KinematicBody2D
             PlayerStatus new_status;
             new_status.position = this.GlobalPosition;
             new_status.health = health;
-            GD.Print(new_status.health);
+
             if (recall_statuses.Count > 7) {recall_statuses.Dequeue();} //remove oldest status
             recall_statuses.Enqueue(new_status); //add latest status
         }
     }
 
-
-    public void OnTimerTimeout() {
-
+    public void CheckWall(float delta) {
+        if (IsOnWall() && (Input.IsActionPressed("right")||Input.IsActionPressed("left"))) {
+            if (velocity.y >= 0) { //if moving down, slow the descent
+                velocity.y = Math.Min(velocity.y + wall_slide_animation, max_wall_slide_speed);
+            } else {
+                // Apply gravity
+                velocity.y += gravity*mass;
+            }
+        } else {velocity.y += gravity*mass;}
     }
+
 }

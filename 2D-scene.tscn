@@ -36,6 +36,22 @@ margin_bottom = 211.0
 position = Vector2( 67, 418 )
 scale = Vector2( 2, 2 )
 
+[node name="StaticBody2D12" type="StaticBody2D" parent="."]
+position = Vector2( -597.436, -143.856 )
+
+[node name="ground" type="Sprite" parent="StaticBody2D12"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+texture = ExtResource( 2 )
+offset = Vector2( 7.62939e-06, 6.10352e-05 )
+region_enabled = true
+region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D12"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+shape = SubResource( 1 )
+
 [node name="StaticBody2D11" type="StaticBody2D" parent="."]
 position = Vector2( -547.842, 0 )
 
@@ -210,6 +226,38 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D8"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+shape = SubResource( 1 )
+
+[node name="StaticBody2D13" type="StaticBody2D" parent="."]
+position = Vector2( -597.436, -288.574 )
+
+[node name="ground" type="Sprite" parent="StaticBody2D13"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+texture = ExtResource( 2 )
+offset = Vector2( 7.62939e-06, 6.10352e-05 )
+region_enabled = true
+region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D13"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+shape = SubResource( 1 )
+
+[node name="StaticBody2D14" type="StaticBody2D" parent="."]
+position = Vector2( -597.436, -433.034 )
+
+[node name="ground" type="Sprite" parent="StaticBody2D14"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+texture = ExtResource( 2 )
+offset = Vector2( 7.62939e-06, 6.10352e-05 )
+region_enabled = true
+region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D14"]
 position = Vector2( 88, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )

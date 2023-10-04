@@ -4,9 +4,10 @@
 [ext_resource path="res://Player.cs" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 6.5, 15 )
+extents = Vector2( 5.5, 14 )
 
 [node name="Player" type="KinematicBody2D"]
+position = Vector2( 3, -1 )
 script = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
@@ -14,18 +15,35 @@ frames = ExtResource( 1 )
 animation = "run"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -3.5, 1 )
+position = Vector2( -3.5, 2 )
 shape = SubResource( 1 )
 
 [node name="GroundRay" type="RayCast2D" parent="."]
 position = Vector2( -3, 1 )
+enabled = true
 cast_to = Vector2( 0, 18 )
+collide_with_areas = true
 
-[node name="Timer" type="Timer" parent="."]
+[node name="LeftRay" type="RayCast2D" parent="."]
+position = Vector2( -3, 0 )
+enabled = true
+cast_to = Vector2( -8, 0 )
+collide_with_areas = true
+
+[node name="RightRay" type="RayCast2D" parent="."]
+position = Vector2( -3, 0 )
+enabled = true
+cast_to = Vector2( 7, 0 )
+collide_with_areas = true
+
+[node name="DashDuration" type="Timer" parent="."]
 wait_time = 0.2
 one_shot = true
 
+[node name="DashCooldown" type="Timer" parent="."]
+
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( -3, 0 )
 offset = Vector2( 59.14, -34.74 )
 current = true
 zoom = Vector2( 0.809, 0.703 )
@@ -39,5 +57,3 @@ margin_bottom = -99.0
 rect_scale = Vector2( 5, 5 )
 rect_pivot_offset = Vector2( 1, 0 )
 text = "100"
-
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
