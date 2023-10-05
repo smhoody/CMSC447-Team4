@@ -33,7 +33,7 @@ margin_right = -209.0
 margin_bottom = 211.0
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
-position = Vector2( 67, 418 )
+position = Vector2( 69, 411 )
 scale = Vector2( 2, 2 )
 
 [node name="StaticBody2D12" type="StaticBody2D" parent="."]
@@ -191,7 +191,6 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D6"]
-visible = false
 position = Vector2( 88, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
@@ -258,6 +257,22 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D14"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+shape = SubResource( 1 )
+
+[node name="StaticBody2D15" type="StaticBody2D" parent="."]
+position = Vector2( -181.717, -433.034 )
+
+[node name="ground" type="Sprite" parent="StaticBody2D15"]
+position = Vector2( 88, 528 )
+scale = Vector2( 1.41442, 1.4785 )
+texture = ExtResource( 2 )
+offset = Vector2( 7.62939e-06, 6.10352e-05 )
+region_enabled = true
+region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D15"]
 position = Vector2( 88, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )

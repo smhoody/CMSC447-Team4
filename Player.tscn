@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Player.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Player.cs" type="Script" id=2]
+[ext_resource path="res://resources/light.png" type="Texture" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 5.5, 14 )
+extents = Vector2( 5, 14 )
 
 [node name="Player" type="KinematicBody2D"]
 position = Vector2( 3, -1 )
@@ -12,10 +13,10 @@ script = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
-animation = "run"
+animation = "heavy_attack"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -3.5, 2 )
+position = Vector2( -1, 2 )
 shape = SubResource( 1 )
 
 [node name="GroundRay" type="RayCast2D" parent="."]
@@ -42,6 +43,14 @@ one_shot = true
 
 [node name="DashCooldown" type="Timer" parent="."]
 
+[node name="QuickAttackTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="HeavyAttackTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( -3, 0 )
 offset = Vector2( 59.14, -34.74 )
@@ -52,8 +61,13 @@ smoothing_speed = 3.0
 [node name="health" type="Label" parent="Camera2D"]
 margin_left = -164.0
 margin_top = -115.0
-margin_right = -131.0
+margin_right = -131.571
 margin_bottom = -99.0
-rect_scale = Vector2( 5, 5 )
+rect_scale = Vector2( 2.954, 2.946 )
 rect_pivot_offset = Vector2( 1, 0 )
 text = "100"
+
+[node name="Light2D" type="Light2D" parent="."]
+visible = false
+texture = ExtResource( 3 )
+texture_scale = 0.2

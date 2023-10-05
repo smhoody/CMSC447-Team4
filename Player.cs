@@ -16,8 +16,8 @@ public struct PlayerStatus {
 public class Player : KinematicBody2D
 {
     [Export] public bool right = true;
-    [Export] public int speed = 300;
-    [Export] public int dash_speed = 700;
+    [Export] public int speed = 400;
+    [Export] public int dash_speed = 1000;
     [Export] public float gravity = 9.81f;
     [Export] public float jump_power = 600f;
     [Export] public float mass = 2.5f;
@@ -42,6 +42,8 @@ public class Player : KinematicBody2D
     public Label health_label; //visual label for health  
     public int health = 100; //actual health value
     public int health_tick = 60; //delete this
+    private Timer quick_attack_timer;
+    private Timer heavy_attack_timer;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -66,6 +68,10 @@ public class Player : KinematicBody2D
         // Health bar
         Camera2D cam = GetNode<Camera2D>("Camera2D");
         health_label = cam.GetChild<Label>(0);
+
+        // Attack timers
+        quick_attack_timer = GetNode<Timer>("QuickAttackTimer");
+        heavy_attack_timer = GetNode<Timer>("HeavyAttackTimer");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -153,30 +159,45 @@ public class Player : KinematicBody2D
     }
 
     public void CheckAnimations(float delta) {
-        //if player is not on the ground, play jumping animation
-        if (!groundray.IsColliding()) {
-            if (IsOnWall()) {
-                _animatedSprite.Stop(); //stop all animations
-                _animatedSprite.Animation = "jump"; //set animation type
-                _animatedSprite.Frame = 0; //set frame
-            } else {
-                _animatedSprite.Play("jump");
+
+        //if attack animation is running, refrain from movement animations
+        if (quick_attack_timer.IsStopped() && heavy_attack_timer.IsStopped()) {
+            //if player is not on the ground, play jumping animation
+            if (!groundray.IsColliding()) {
+                if (IsOnWall()) {
+                    _animatedSprite.Stop(); //stop all animations
+                    _animatedSprite.Animation = "jump"; //set animation type
+                    _animatedSprite.Frame = 1; //set frame
+                } else {
+                    _animatedSprite.Play("jump");
+                }
+            } else { //player is on the ground
+                //player is moving to the right
+                if (Input.IsActionPressed("right")) {
+                    _animatedSprite.Play("run");
+                }
+                //player is moving to the left
+                else if (Input.IsActionPressed("left")) {
+                    _animatedSprite.Play("run");
+                }
+                //no movement is happening, stop animations and reset frame
+                else {
+                    _animatedSprite.Play("idle");
+                    // _animatedSprite.Frame = 0;
+                }
             }
-        } else { //player is on the ground
-            //player is moving to the right
-            if (Input.IsActionPressed("right")) {
-                _animatedSprite.Play("run");
-            }
-            //player is moving to the left
-            else if (Input.IsActionPressed("left")) {
-                _animatedSprite.Play("run");
-            }
-            //no movement is happening, stop animations and reset frame
-            else {
-                _animatedSprite.Stop();
-                _animatedSprite.Frame = 0;
-            }
+        } 
+        
+        // Attack animation checks
+        if (Input.IsActionJustPressed("quick_attack")) {
+            quick_attack_timer.Start(); //timer represents the duration of the attack
+            _animatedSprite.Play("quick_attack");
+        } else if (Input.IsActionJustPressed("heavy_attack")) {
+            heavy_attack_timer.Start(); //timer represents the duration of the attack
+            _animatedSprite.Play("heavy_attack");
         }
+        
+
     }
 
 
