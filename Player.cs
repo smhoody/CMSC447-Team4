@@ -36,9 +36,13 @@ public class Player : KinematicBody2D
 
     private Timer dash_timer; //for adjusting dash duration
     private Timer dash_cooldown; //for adjusting dash duration
+    private float dash_cooldown_value = 1f; //literal dash cooldown
     private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
+    private int recall_length = 2; //determines the number of seconds to store statuses (n - 1)
+    private Timer recall_cooldown; //cooldown for recall ability
+    private float recall_cooldown_value = 5f; //literal recall cooldown
     public Label health_label; //visual label for health  
     public int health = 100; //actual health value
     public int health_tick = 60; //delete this
@@ -62,7 +66,7 @@ public class Player : KinematicBody2D
 
         // Dash cooldown timer
         dash_cooldown = GetNode<Timer>("DashCooldown");
-        dash_cooldown.WaitTime = 3; //cooldown for dash
+        dash_cooldown.WaitTime = dash_cooldown_value; //cooldown for dash
         dash_cooldown.OneShot = true; 
 
         // Health bar
@@ -72,6 +76,11 @@ public class Player : KinematicBody2D
         // Attack timers
         quick_attack_timer = GetNode<Timer>("QuickAttackTimer");
         heavy_attack_timer = GetNode<Timer>("HeavyAttackTimer");
+
+        // Recall cooldown
+        recall_cooldown = GetNode<Timer>("RecallCooldown");
+        recall_cooldown.WaitTime = recall_cooldown_value; //cooldown for recall
+        recall_cooldown.OneShot = true;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -144,7 +153,9 @@ public class Player : KinematicBody2D
         }
         
         // RECALL LOGIC---------------------------
-        if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1) {
+        if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1
+            && recall_cooldown.IsStopped()) {
+            recall_cooldown.Start();
             PlayerStatus status = recall_statuses.Peek(); //get oldest status
             this.Position = status.position; //set player position to the position in that status
             health = status.health; //set player health to what it was in that status
@@ -216,7 +227,7 @@ public class Player : KinematicBody2D
             new_status.position = this.GlobalPosition;
             new_status.health = health;
 
-            if (recall_statuses.Count > 7) {recall_statuses.Dequeue();} //remove oldest status
+            if (recall_statuses.Count >= recall_length) {recall_statuses.Dequeue();} //remove oldest status
             recall_statuses.Enqueue(new_status); //add latest status
         }
     }

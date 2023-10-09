@@ -51,6 +51,8 @@ one_shot = true
 wait_time = 0.5
 one_shot = true
 
+[node name="RecallCooldown" type="Timer" parent="."]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( -3, 0 )
 offset = Vector2( 59.14, -34.74 )
