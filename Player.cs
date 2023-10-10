@@ -42,7 +42,8 @@ public class Player : KinematicBody2D
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
     private int recall_length = 2; //determines the number of seconds to store statuses (n - 1)
     private Timer recall_cooldown; //cooldown for recall ability
-    private float recall_cooldown_value = 5f; //literal recall cooldown
+    private float recall_cooldown_value = 5f; //recall ability cooldown for player
+    private float recall_animation = 3f;
     public Label health_label; //visual label for health  
     public int health = 100; //actual health value
     public int health_tick = 60; //delete this
@@ -120,14 +121,8 @@ public class Player : KinematicBody2D
         int relative_speed = speed; 
 
         //WALKING LOGIC--------------------------   
-        if (Input.IsActionPressed("right")) {
-            _animatedSprite.FlipH = false;
-            velocity.x += 1;
-        }
-        else if (Input.IsActionPressed("left")) { 
-            _animatedSprite.FlipH = true;
-            velocity.x -= 1;
-        }
+        if (Input.IsActionPressed("right")) {velocity.x += 1;}
+        else if (Input.IsActionPressed("left")) { velocity.x -= 1;}
         
         //JUMP LOGIC------------------------------
         if (Input.IsActionJustPressed("jump")) {
@@ -175,26 +170,47 @@ public class Player : KinematicBody2D
         if (quick_attack_timer.IsStopped() && heavy_attack_timer.IsStopped()) {
             //if player is not on the ground, play jumping animation
             if (!groundray.IsColliding()) {
-                if (IsOnWall()) {
+                //check if player is on a wall
+                if (leftray.IsColliding() || rightray.IsColliding()) {
                     _animatedSprite.Stop(); //stop all animations
                     _animatedSprite.Animation = "jump"; //set animation type
                     _animatedSprite.Frame = 1; //set frame
+                    GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
                 } else {
                     _animatedSprite.Play("jump");
+                    GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
+                    // if (Input.IsActionPressed("left")) {_animatedSprite.RotationDegrees = -7;}
+                    // else if (Input.IsActionPressed("right")) {_animatedSprite.RotationDegrees = 7;}
+                }
+                if (!dash_timer.IsStopped()) {
+                    _animatedSprite.Animation = "run";
+                    _animatedSprite.Frame = 2;
+                    switch (Input.IsActionPressed("left")) {
+                        case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
+                        case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
+                    }
                 }
             } else { //player is on the ground
+                //reset possible rotations from jumping 
+                _animatedSprite.RotationDegrees = 0;
                 //player is moving to the right
                 if (Input.IsActionPressed("right")) {
+                    GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
+                    _animatedSprite.FlipH = false;
+                    // _animatedSprite.RotationDegrees = 10; //add slight tilt to the right
                     _animatedSprite.Play("run");
                 }
                 //player is moving to the left
                 else if (Input.IsActionPressed("left")) {
+                    GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
+                    _animatedSprite.FlipH = true;
+                    // _animatedSprite.RotationDegrees = -10; //add slight tilt to the left
                     _animatedSprite.Play("run");
                 }
-                //no movement is happening, stop animations and reset frame
+                //no movement is happening, play idle animation
                 else {
+                    GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.Play("idle");
-                    // _animatedSprite.Frame = 0;
                 }
             }
         } 
@@ -208,6 +224,9 @@ public class Player : KinematicBody2D
             _animatedSprite.Play("heavy_attack");
         }
         
+        if (Input.IsActionJustPressed("recall")) {
+
+        }
 
     }
 
