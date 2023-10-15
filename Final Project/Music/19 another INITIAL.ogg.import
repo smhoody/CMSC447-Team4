@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/19 another INITIAL.ogg-2257f1121a0f20710930e18c4a1393c3.oggstr"
+
+[deps]
+
+source_file="res://Music/19 another INITIAL.ogg"
+dest_files=[ "res://.import/19 another INITIAL.ogg-2257f1121a0f20710930e18c4a1393c3.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

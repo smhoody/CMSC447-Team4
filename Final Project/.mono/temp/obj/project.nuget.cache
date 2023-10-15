@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dEgNKE2MgiBR1+rcEZr/lV9kDfhRIzzgHOYDA3ehELD1u7T9Hx9wDrcAOWiIeYGMx726XQdEt1YPul5+4FPLnw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project\\Final Project.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ronal\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.2\\microsoft.netframework.referenceassemblies.1.0.2.nupkg.sha512",
+    "C:\\Users\\ronal\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.2\\microsoft.netframework.referenceassemblies.net472.1.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

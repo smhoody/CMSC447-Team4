@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/20 largo.ogg-07791fc5cdf82788b68d4e3ba11070b4.oggstr"
+
+[deps]
+
+source_file="res://Music/20 largo.ogg"
+dest_files=[ "res://.import/20 largo.ogg-07791fc5cdf82788b68d4e3ba11070b4.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0
