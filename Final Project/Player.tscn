@@ -63,15 +63,6 @@ current = true
 zoom = Vector2( 0.809, 0.703 )
 smoothing_speed = 3.0
 
-[node name="health" type="Label" parent="Camera2D"]
-margin_left = -164.0
-margin_top = -115.0
-margin_right = -131.571
-margin_bottom = -99.0
-rect_scale = Vector2( 2.954, 2.946 )
-rect_pivot_offset = Vector2( 1, 0 )
-text = "100"
-
 [node name="Light2D" type="Light2D" parent="."]
 visible = false
 texture = ExtResource( 3 )

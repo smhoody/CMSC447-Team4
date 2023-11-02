@@ -35,8 +35,8 @@ public class Player : KinematicBody2D
     private RayCast2D rightray;
 
     private Timer dash_timer; //for adjusting dash duration
-    private Timer dash_cooldown; //for adjusting dash duration
-    private float dash_cooldown_value = 1f; //literal dash cooldown
+    public Timer dash_cooldown; //for adjusting dash duration
+    public float dash_cooldown_value = 1f; //literal dash cooldown
     private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
@@ -46,7 +46,6 @@ public class Player : KinematicBody2D
     private float recall_animation = 3f;
     public Label health_label; //visual label for health  
     public int health = 100; //actual health value
-    public int health_tick = 60; //delete this
     private Timer quick_attack_timer;
     private Timer heavy_attack_timer;
 
@@ -72,7 +71,6 @@ public class Player : KinematicBody2D
 
         // Health bar
         Camera2D cam = GetNode<Camera2D>("Camera2D");
-        health_label = cam.GetChild<Label>(0);
 
         // Attack timers
         quick_attack_timer = GetNode<Timer>("QuickAttackTimer");
@@ -102,16 +100,7 @@ public class Player : KinematicBody2D
         
         // check Recall ability 
         ProcessRecall();
-
-        health_tick--;
-        if (health_tick == 0) {
-            health_tick = 60;
-            health--;
-            health_label.Text = health.ToString();
-        }
-
         
-
     }
 
     public void GetInput(float delta) {
@@ -185,10 +174,10 @@ public class Player : KinematicBody2D
                 if (!dash_timer.IsStopped()) {
                     _animatedSprite.Animation = "run";
                     _animatedSprite.Frame = 2;
-                    switch (Input.IsActionPressed("left")) {
-                        case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
-                        case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
-                    }
+                    // switch (Input.IsActionPressed("left")) {
+                    //     case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
+                    //     case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
+                    // }
                 }
             } else { //player is on the ground
                 //reset possible rotations from jumping 
