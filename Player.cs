@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 
 /**
@@ -43,12 +42,16 @@ public class Player : KinematicBody2D
     private int recall_length = 2; //determines the number of seconds to store statuses (n - 1)
     private Timer recall_cooldown; //cooldown for recall ability
     private float recall_cooldown_value = 5f; //recall ability cooldown for player
-    private float recall_animation = 3f;
-    public Label health_label; //visual label for health  
+    private float recall_animation = 3f; 
     public int health = 100; //actual health value
+<<<<<<< Updated upstream:Player.cs
     public int health_tick = 60; //delete this
     private Timer quick_attack_timer;
     private Timer heavy_attack_timer;
+=======
+    private Timer quick_attack_timer; //cooldown timer for quick attack (prevents spam)
+    private Timer heavy_attack_timer; //cooldown timer for heavy attack
+>>>>>>> Stashed changes:Final Project/Player.cs
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -67,7 +70,7 @@ public class Player : KinematicBody2D
 
         // Dash cooldown timer
         dash_cooldown = GetNode<Timer>("DashCooldown");
-        dash_cooldown.WaitTime = dash_cooldown_value; //cooldown for dash
+        dash_cooldown.WaitTime = dash_cooldown_value; //set cooldown for dash
         dash_cooldown.OneShot = true; 
 
         // Health bar
@@ -134,6 +137,7 @@ public class Player : KinematicBody2D
                 can_wall_jump = false; //only allow 1 jump once the player hits the wall
             }
         }
+        
         if (!IsOnWall()) {can_wall_jump = true;} //reset wall-jump flag when player leaves wall
 
         // DASH LOGIC-----------------------------
@@ -147,14 +151,19 @@ public class Player : KinematicBody2D
             if (Input.IsActionPressed("up")) {velocity.y -= 10;} //apply upward momentum if moving up
         }
         
-        // RECALL LOGIC---------------------------
+        /*
+        ---RECALL LOGIC---------------------------
+        1) check if recall key is pressed
+        2) ensure there's at least 1 recall point in the queue
+        3) ensure recall cooldown is not active  
+        */
         if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1
             && recall_cooldown.IsStopped()) {
             recall_cooldown.Start();
             PlayerStatus status = recall_statuses.Peek(); //get oldest status
             this.Position = status.position; //set player position to the position in that status
             health = status.health; //set player health to what it was in that status
-            health_label.Text = health.ToString(); //update health label
+            //update health visual
         }
 
         //adjust horizontal speed
@@ -175,41 +184,47 @@ public class Player : KinematicBody2D
                     _animatedSprite.Stop(); //stop all animations
                     _animatedSprite.Animation = "jump"; //set animation type
                     _animatedSprite.Frame = 1; //set frame
-                    GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
+                    // GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
                 } else {
                     _animatedSprite.Play("jump");
-                    GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
-                    // if (Input.IsActionPressed("left")) {_animatedSprite.RotationDegrees = -7;}
-                    // else if (Input.IsActionPressed("right")) {_animatedSprite.RotationDegrees = 7;}
+                    // GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
                 }
                 if (!dash_timer.IsStopped()) {
                     _animatedSprite.Animation = "run";
                     _animatedSprite.Frame = 2;
+<<<<<<< Updated upstream:Player.cs
                     switch (Input.IsActionPressed("left")) {
                         case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
                         case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
                     }
+=======
+                    // Fliping mechanics
+                    // switch (Input.IsActionPressed("left")) {
+                    //     case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
+                    //     case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
+                    // }
+>>>>>>> Stashed changes:Final Project/Player.cs
                 }
             } else { //player is on the ground
                 //reset possible rotations from jumping 
                 _animatedSprite.RotationDegrees = 0;
                 //player is moving to the right
                 if (Input.IsActionPressed("right")) {
-                    GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
+                    // GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.FlipH = false;
                     // _animatedSprite.RotationDegrees = 10; //add slight tilt to the right
                     _animatedSprite.Play("run");
                 }
                 //player is moving to the left
                 else if (Input.IsActionPressed("left")) {
-                    GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
+                    // GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.FlipH = true;
                     // _animatedSprite.RotationDegrees = -10; //add slight tilt to the left
                     _animatedSprite.Play("run");
                 }
                 //no movement is happening, play idle animation
                 else {
-                    GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
+                    // GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.Play("idle");
                 }
             }
@@ -252,14 +267,15 @@ public class Player : KinematicBody2D
     }
 
     public void CheckWall(float delta) {
+        //if on wall and moving toward the wall
         if (IsOnWall() && (Input.IsActionPressed("right")||Input.IsActionPressed("left"))) {
             if (velocity.y >= 0) { //if moving down, slow the descent
                 velocity.y = Math.Min(velocity.y + wall_slide_animation, max_wall_slide_speed);
             } else {
-                // Apply gravity
+                // Apply normal gravity when not moving toward wall
                 velocity.y += gravity*mass;
             }
-        } else {velocity.y += gravity*mass;}
+        } else {velocity.y += gravity*mass;} //? idk y
     }
 
 }

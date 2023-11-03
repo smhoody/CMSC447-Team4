@@ -57,11 +57,9 @@ one_shot = true
 [node name="RecallCooldown" type="Timer" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( -3, 0 )
-offset = Vector2( 59.14, -34.74 )
+offset = Vector2( 56.734, -33.27 )
 current = true
-zoom = Vector2( 0.809, 0.703 )
-smoothing_speed = 3.0
+zoom = Vector2( 0.759, 0.699 )
 
 [node name="health" type="Label" parent="Camera2D"]
 margin_left = -164.0
