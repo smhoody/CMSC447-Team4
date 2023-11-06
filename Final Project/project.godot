@@ -17,7 +17,7 @@ config/icon="res://icon.png"
 [autoload]
 
 MusicController="*res://MusicController.tscn"
-Player="*res://Player.cs"
+Player="*res://Player.tscn"
 
 [debug]
 
