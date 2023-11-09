@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "afT+IiaOJpZnZtU/00MqQ+sfxieAwuE2nwN7z7hZ26uBFt8k08ZH6olg1fXY4DTTSh0bkrWZlbIFBD+sBsji5w==",
+  "dgSpecHash": "xndFL156+oZ9k8bmh071WoO7TnAnCHabdDqIjEnfxZPCM5AKpMUDbi3EK+shVM8y+cth4EinRihHEQV2zVm8Sg==",
   "success": true,
-  "projectFilePath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\Steven\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
-    "C:\\Users\\Steven\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.3\\microsoft.netframework.referenceassemblies.net472.1.0.3.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\smhoo\\OneDrive\\Desktop\\proj\\CMSC447-Team4\\Final Project\\Final Project.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

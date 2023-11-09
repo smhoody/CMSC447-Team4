@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Runtime;
 
 
 /**
@@ -46,6 +47,10 @@ public class Player : KinematicBody2D
     public int health = 100; //actual health value
     public Timer quick_attack_timer; //cooldown timer for quick attack (prevents spam)
     public Timer heavy_attack_timer; //cooldown timer for heavy attack
+    //heart sprites for the hud
+    public AnimatedSprite heart1; 
+    public AnimatedSprite heart2;
+    public AnimatedSprite heart3;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -67,8 +72,13 @@ public class Player : KinematicBody2D
         dash_cooldown.WaitTime = dash_cooldown_value; //set cooldown for dash
         dash_cooldown.OneShot = true; 
 
-        // Health bar
-        Camera2D cam = GetNode<Camera2D>("Camera2D");
+
+        // Health bar hearts
+        HUD hud = (HUD)GetNode("/root/HUD");
+        Panel health_bar = hud.GetChild<Panel>(1);
+        heart1 = health_bar.GetChild<AnimatedSprite>(0);
+        heart2 = health_bar.GetChild<AnimatedSprite>(1);
+        heart3 = health_bar.GetChild<AnimatedSprite>(2);
 
         // Attack timers
         quick_attack_timer = GetNode<Timer>("QuickAttackTimer");
@@ -99,6 +109,9 @@ public class Player : KinematicBody2D
         // check Recall ability 
         ProcessRecall();
 
+        // check health
+        UpdateHealth();
+        
 
     }
 
@@ -231,6 +244,7 @@ public class Player : KinematicBody2D
     public void ProcessRecall() {
         frame_counter++;
         if (frame_counter == 60) { //activate on the 60th (1 second) frame
+            health -= 5; //DELETE
             frame_counter = 0; //reset counter
             //save current info about player (position, health)
             PlayerStatus new_status;
@@ -252,6 +266,16 @@ public class Player : KinematicBody2D
                 velocity.y += gravity*mass;
             }
         } else {velocity.y += gravity*mass;} //? idk y
+    }
+
+    public void UpdateHealth() {
+        if (health < 68) {heart3.Frame = 2;}
+        else if (health < 84) {heart3.Frame = 1;} 
+        if (health < 37) {heart2.Frame = 2;}
+        else if (health < 52) {heart2.Frame = 1;} 
+        if (health <= 0) {heart1.Frame = 2;}
+        else if (health < 20) {heart1.Frame = 1;}  
+         
     }
 
 }
