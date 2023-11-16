@@ -13,8 +13,8 @@ public class recall_cooldown_label : ProgressBar
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
  public override void _Process(float delta)
  {
-    //display cooldown value as a percentage. Full bar = dash available
-    this.Value = (1 - p.recall_cooldown.TimeLeft) * 100;
+    //display cooldown value as a percentage. Full bar = recall available
+    this.Value = (1 - p.recall_cooldown.TimeLeft / p.recall_cooldown_value) * 100;
  }
 }
 

@@ -13,7 +13,7 @@ public struct PlayerStatus {
     public int health;
 }
 
-public class Player : KinematicBody2D
+public class Player : KinematicBody2D, TakeDamage
 {
     [Export] public bool right = true;
     [Export] public int speed = 400;
@@ -36,13 +36,13 @@ public class Player : KinematicBody2D
 
     private Timer dash_timer; //for adjusting dash duration
     public Timer dash_cooldown; //for adjusting dash duration
-    private float dash_cooldown_value = 1f; //literal dash cooldown
+    public float dash_cooldown_value = 1f; //literal dash cooldown
     private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
     private int recall_length = 2; //determines the number of seconds to store statuses (n - 1)
     public Timer recall_cooldown; //cooldown for recall ability
-    private float recall_cooldown_value = 5f; //recall ability cooldown for player
+    public float recall_cooldown_value = 5f; //recall ability cooldown for player
     private float recall_animation = 3f; 
     public int health = 100; //actual health value
     public Timer quick_attack_timer; //cooldown timer for quick attack (prevents spam)
@@ -278,4 +278,8 @@ public class Player : KinematicBody2D
          
     }
 
+
+    public void TakeDamage(float damage, Vector2? attackFromVector) {
+        
+    }
 }

@@ -14,6 +14,6 @@ public class DashCooldownLabel : ProgressBar
  public override void _Process(float delta)
  {
     //display cooldown value as a percentage. Full bar = dash available
-    this.Value = (1 - p.dash_cooldown.TimeLeft) * 100;
+    this.Value = (1 - p.dash_cooldown.TimeLeft / p.dash_cooldown_value) * 100;
  }
 }

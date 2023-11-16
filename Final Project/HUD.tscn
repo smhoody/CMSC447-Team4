@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://DashCooldownLabel.cs" type="Script" id=1]
 [ext_resource path="res://resources/hearts2.png" type="Texture" id=2]
 [ext_resource path="res://resources/Character/dash_icon.png" type="Texture" id=3]
 [ext_resource path="res://HUD.cs" type="Script" id=4]
 [ext_resource path="res://recall_cooldown_label.cs" type="Script" id=5]
+[ext_resource path="res://resources/Character/recall_icon2.png" type="Texture" id=6]
 
 [sub_resource type="StyleBoxFlat" id=7]
 bg_color = Color( 0.623529, 0.0392157, 0.0392157, 1 )
@@ -56,8 +57,8 @@ script = ExtResource( 4 )
 [node name="dash_cooldown_panel" type="Node" parent="."]
 
 [node name="dash_icon" type="Sprite" parent="dash_cooldown_panel"]
-position = Vector2( 42, 105 )
-scale = Vector2( 0.08, 0.08 )
+position = Vector2( 41, 104 )
+scale = Vector2( 0.076965, 0.054553 )
 texture = ExtResource( 3 )
 
 [node name="dash_cooldown_label" type="ProgressBar" parent="dash_cooldown_panel"]
@@ -100,6 +101,9 @@ offset = Vector2( 0, -39.681 )
 [node name="recall_cooldown_panel" type="Node" parent="."]
 
 [node name="recall_icon" type="Sprite" parent="recall_cooldown_panel"]
+position = Vector2( 42, 131 )
+scale = Vector2( 0.00540499, 0.00448643 )
+texture = ExtResource( 6 )
 
 [node name="recall_cooldown_label" type="ProgressBar" parent="recall_cooldown_panel"]
 margin_left = 56.0
