@@ -1,11 +1,15 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Player.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Player.cs" type="Script" id=2]
 [ext_resource path="res://resources/light.png" type="Texture" id=3]
+[ext_resource path="res://Hitbox.cs" type="Script" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 5, 11.5 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 8, 9.5 )
 
 [node name="Player" type="KinematicBody2D"]
 position = Vector2( 3, -1 )
@@ -51,7 +55,7 @@ wait_time = 0.2
 one_shot = true
 
 [node name="HeavyAttackTimer" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.6
 one_shot = true
 
 [node name="RecallCooldown" type="Timer" parent="."]
@@ -70,3 +74,12 @@ smoothing_speed = 3.0
 visible = false
 texture = ExtResource( 3 )
 texture_scale = 0.2
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 9
+collision_mask = 0
+script = ExtResource( 4 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( 9, 4 )
+shape = SubResource( 2 )

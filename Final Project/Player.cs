@@ -33,10 +33,13 @@ public class Player : KinematicBody2D, TakeDamage
     private RayCast2D groundray;
     private RayCast2D leftray;
     private RayCast2D rightray;
+    private Hitbox hitbox;
+    private Hurtbox hurtbox;
 
     private Timer dash_timer; //for adjusting dash duration
     public Timer dash_cooldown; //for adjusting dash duration
     public float dash_cooldown_value = 1f; //literal dash cooldown
+    private float dash_upward_force = 14f; //vertical boost for an upward dash
     private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
@@ -51,6 +54,8 @@ public class Player : KinematicBody2D, TakeDamage
     public AnimatedSprite heart1; 
     public AnimatedSprite heart2;
     public AnimatedSprite heart3;
+    public bool is_dead;
+    public Timer take_damage_timer;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -88,6 +93,10 @@ public class Player : KinematicBody2D, TakeDamage
         recall_cooldown = GetNode<Timer>("RecallCooldown");
         recall_cooldown.WaitTime = recall_cooldown_value; //cooldown for recall
         recall_cooldown.OneShot = true;
+
+        //Received Damage Timer
+        take_damage_timer = GetNode<Timer>("TakeDamageTimer");
+
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -146,7 +155,7 @@ public class Player : KinematicBody2D, TakeDamage
         }
         if (!dash_timer.IsStopped()) { //while dashing is activated
             relative_speed = dash_speed;
-            if (Input.IsActionPressed("up")) {velocity.y -= 10;} //apply upward momentum if moving up
+            if (Input.IsActionPressed("up")) {velocity.y -= dash_upward_force;} //apply upward momentum if moving up
         }
         
         /*
@@ -162,6 +171,13 @@ public class Player : KinematicBody2D, TakeDamage
             this.Position = status.position; //set player position to the position in that status
             health = status.health; //set player health to what it was in that status
             //update health visual
+        }
+
+        /*
+        ---Quick Attack Logic----------------------
+        */
+        if (Input.IsActionJustPressed("quick_attack") && quick_attack_timer.IsStopped()) {
+            hitbox.SetAttackFromVector(this.GlobalPosition);
         }
 
         //adjust horizontal speed
@@ -190,7 +206,7 @@ public class Player : KinematicBody2D, TakeDamage
                 if (!dash_timer.IsStopped()) {
                     _animatedSprite.Animation = "run";
                     _animatedSprite.Frame = 2;
-                    // Fliping mechanics
+                    // Flipping mechanics
                     // switch (Input.IsActionPressed("left")) {
                     //     case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
                     //     case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
@@ -217,7 +233,7 @@ public class Player : KinematicBody2D, TakeDamage
                     _animatedSprite.Play("idle");
                 }
             }
-        } 
+        }//end if quick_attack_timer.IsStopped()
         
         // Attack animation checks
         if (Input.IsActionJustPressed("quick_attack")) {
@@ -244,7 +260,6 @@ public class Player : KinematicBody2D, TakeDamage
     public void ProcessRecall() {
         frame_counter++;
         if (frame_counter == 60) { //activate on the 60th (1 second) frame
-            health -= 5; //DELETE
             frame_counter = 0; //reset counter
             //save current info about player (position, health)
             PlayerStatus new_status;
@@ -268,6 +283,9 @@ public class Player : KinematicBody2D, TakeDamage
         } else {velocity.y += gravity*mass;} //? idk y
     }
 
+    /**
+    Helper function to update the visual health bar based on health value
+    */
     public void UpdateHealth() {
         if (health < 68) {heart3.Frame = 2;}
         else if (health < 84) {heart3.Frame = 1;} 
@@ -279,7 +297,19 @@ public class Player : KinematicBody2D, TakeDamage
     }
 
 
-    public void TakeDamage(float damage, Vector2? attackFromVector) {
+    public void TakeDamage(int damage, Vector2? attackFromVector) {
+        health -= damage;
+        UpdateHealth();
         
+        //check if player died
+        if (health <= 0 && !is_dead) {
+            is_dead = true;
+            GD.Print("dead");
+        } else {
+            if (attackFromVector != null) {
+                //start cooldown timer for taking damage (player is immune for this duration)
+                take_damage_timer.Start();
+            }
+        }
     }
 }

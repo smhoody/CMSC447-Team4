@@ -4,7 +4,7 @@ using System;
 public class Hitbox : Area2D
 {
     [Export]
-    public float damage = 1.0f; //damage the hitbox will deliver
+    public int damage = 10; //damage the hitbox will deliver
     public Vector2? AttackFromVector = null; //vector the attack came from
 
 
