@@ -4,10 +4,11 @@ using System;
 public class Game : Node2D
 {
     MusicController music;
+    
     public override void _Ready()
     {
         music = GetNode<MusicController>("MusicController");
-        GetTree().ChangeScene("res://MainMenu.tscn");
+        GetTree().ChangeScene("res://Menus/MainMenu.tscn");
         
     }
 

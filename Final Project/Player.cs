@@ -283,6 +283,7 @@ public class Player : KinematicBody2D, TakeDamage
         } else {velocity.y += gravity*mass;} //? idk y
     }
 
+<<<<<<< Updated upstream
     /**
     Helper function to update the visual health bar based on health value
     */
@@ -313,3 +314,10 @@ public class Player : KinematicBody2D, TakeDamage
         }
     }
 }
+=======
+    public void Die()
+    {
+        GameManager.RespawnPlayer();
+    }
+}
+>>>>>>> Stashed changes

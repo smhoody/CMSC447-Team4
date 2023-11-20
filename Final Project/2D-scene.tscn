@@ -1,13 +1,23 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=7 format=2]
+=======
+[gd_scene load_steps=8 format=2]
+>>>>>>> Stashed changes
 
 [ext_resource path="res://resources/Background/03 background B.png" type="Texture" id=1]
 [ext_resource path="res://resources/main_lev_build.png" type="Texture" id=2]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=3]
+<<<<<<< Updated upstream
 [ext_resource path="res://HUD.tscn" type="PackedScene" id=4]
 [ext_resource path="res://TestEnemy.tscn" type="PackedScene" id=5]
+=======
+[ext_resource path="res://Enemies/PupEnemy.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Enemies/SpiderEnemy.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Interactable/RespawnPoint.tscn" type="PackedScene" id=6]
+>>>>>>> Stashed changes
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 62.2162, 48.6981 )
+extents = Vector2( 65.3978, 48.6981 )
 
 [node name="Node2D" type="Node2D"]
 
@@ -99,7 +109,7 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D9"]
-position = Vector2( 88, 528 )
+position = Vector2( 88.114, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
 
@@ -130,7 +140,7 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
-position = Vector2( 88, 528 )
+position = Vector2( 86.4999, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
 
@@ -146,7 +156,7 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
-position = Vector2( 88, 528 )
+position = Vector2( 87.25, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
 
@@ -154,7 +164,7 @@ shape = SubResource( 1 )
 position = Vector2( 560, 0 )
 
 [node name="ground" type="Sprite" parent="StaticBody2D4"]
-position = Vector2( 88, 528 )
+position = Vector2( 127, 525 )
 scale = Vector2( 1.41442, 1.4785 )
 texture = ExtResource( 2 )
 offset = Vector2( 7.62939e-06, 6.10352e-05 )
@@ -162,7 +172,7 @@ region_enabled = true
 region_rect = Rect2( 1158.02, 866.6, 129.54, 97.9449 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
-position = Vector2( 88, 528 )
+position = Vector2( 129, 527 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
 
@@ -280,6 +290,21 @@ position = Vector2( 88, 528 )
 scale = Vector2( 1.41442, 1.4785 )
 shape = SubResource( 1 )
 
+<<<<<<< Updated upstream
 [node name="Node2D" parent="." instance=ExtResource( 5 )]
 position = Vector2( 365, 423 )
 scale = Vector2( 2, 2 )
+=======
+[node name="PupEnemy" parent="." instance=ExtResource( 4 )]
+position = Vector2( 239, 434 )
+scale = Vector2( 2.5365, 2.5365 )
+
+[node name="SpiderEnemy" parent="." instance=ExtResource( 5 )]
+visible = false
+position = Vector2( 208, 419 )
+scale = Vector2( 1.53662, 1.53662 )
+
+[node name="RespawnPoint" parent="." instance=ExtResource( 6 )]
+position = Vector2( -235, 423 )
+scale = Vector2( 2.85177, 2.85177 )
+>>>>>>> Stashed changes

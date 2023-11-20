@@ -3,10 +3,10 @@ using System;
 
 public class MusicController : Node
 {
-    private AudioStreamPlayer2D menu_music;
+    private AudioStreamPlayer menu_music;
     public override void _Ready()
     {
-        menu_music = GetNode<AudioStreamPlayer2D>("Menu Music");
+        menu_music = GetNode<AudioStreamPlayer>("Menu Music");
     }        
 
     public void PlayMusic()
