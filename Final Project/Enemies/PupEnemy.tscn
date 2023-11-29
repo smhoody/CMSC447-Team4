@@ -1,0 +1,126 @@
+[gd_scene load_steps=16 format=2]
+
+[ext_resource path="res://Enemies/PupEnemy.cs" type="Script" id=1]
+[ext_resource path="res://resources/Enemies/Pup/Pup_Sprites.png" type="Texture" id=2]
+[ext_resource path="res://Hurtbox.cs" type="Script" id=3]
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 1500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 1500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=10]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 0, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1000, 0, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1500, 0, 500, 500 )
+
+[sub_resource type="SpriteFrames" id=8]
+animations = [ {
+"frames": [ SubResource( 2 ), SubResource( 3 ) ],
+"loop": true,
+"name": "attack",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 9 ), SubResource( 10 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ) ],
+"loop": true,
+"name": "run",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=11]
+extents = Vector2( 10.5, 5 )
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 9, 6 )
+
+[sub_resource type="RectangleShape2D" id=12]
+extents = Vector2( 9, 6 )
+
+[node name="PupEnemy" type="KinematicBody2D"]
+collision_layer = 4
+script = ExtResource( 1 )
+follow_distance = 350.0
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+position = Vector2( 0, -6 )
+scale = Vector2( 0.05, 0.05 )
+frames = SubResource( 8 )
+animation = "idle"
+frame = 1
+
+[node name="DownLeftRay" type="RayCast2D" parent="."]
+position = Vector2( -11, 3 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="DownRightRay" type="RayCast2D" parent="."]
+position = Vector2( 11, 3 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="LookRay" type="RayCast2D" parent="."]
+position = Vector2( 0, 1 )
+enabled = true
+cast_to = Vector2( 10, 0 )
+
+[node name="AttackDuration" type="Timer" parent="."]
+wait_time = 0.2
+
+[node name="AttackCooldown" type="Timer" parent="."]
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( -0.5, 1 )
+shape = SubResource( 11 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 1 )
+shape = SubResource( 1 )
+
+[node name="TakeDamageTimer" type="Timer" parent="."]
+wait_time = 0.15
+
+[node name="Hurtbox" type="Area2D" parent="."]
+script = ExtResource( 3 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2( 0, 1 )
+shape = SubResource( 12 )
+
+[connection signal="area_entered" from="Hitbox" to="." method="_on_Hitbox_area_entered"]

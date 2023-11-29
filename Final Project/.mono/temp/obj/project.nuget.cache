@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "SvwwNatO+YA/x5yxOkyZzyxb9EnnDvYOgw5BOukycoM5slDibpqAUmu9J/1PiEFbsSC8xJCzDEYcaItQ42hrEg==",
   "success": true,
   "projectFilePath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project.csproj",
+=======
+  "dgSpecHash": "afT+IiaOJpZnZtU/00MqQ+sfxieAwuE2nwN7z7hZ26uBFt8k08ZH6olg1fXY4DTTSh0bkrWZlbIFBD+sBsji5w==",
+  "success": true,
+  "projectFilePath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj",
+>>>>>>> Stashed changes
   "expectedPackageFiles": [
     "C:\\Users\\Steven\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
     "C:\\Users\\Steven\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.3\\microsoft.netframework.referenceassemblies.net472.1.0.3.nupkg.sha512"
