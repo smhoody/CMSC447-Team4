@@ -3,22 +3,17 @@ using System;
 
 public class DashCooldownLabel : ProgressBar
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
-
+    public Player p;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        
+        p = (Player)GetNode("/root/Player");
     }
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
  public override void _Process(float delta)
  {
-    Player p = (Player)GetNode("/root/Player");
-    // GD.Print(p.dash_cooldown.TimeLeft);
     //display cooldown value as a percentage. Full bar = dash available
-    this.Value = (1 - p.dash_cooldown.TimeLeft) * 100;
+    this.Value = (1 - p.dash_cooldown.TimeLeft / p.dash_cooldown_value) * 100;
  }
 }

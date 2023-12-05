@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/16 airship LOOP.ogg-08ac60e80a6d14c4f7b8657a8e755179.oggstr"
+
+[deps]
+
+source_file="res://Music/16 airship LOOP.ogg"
+dest_files=[ "res://.import/16 airship LOOP.ogg-08ac60e80a6d14c4f7b8657a8e755179.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

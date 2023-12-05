@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/14 BOSS y INITIAL.ogg-81df195ee0d9598d24502013313f2fe2.oggstr"
+
+[deps]
+
+source_file="res://Music/14 BOSS y INITIAL.ogg"
+dest_files=[ "res://.import/14 BOSS y INITIAL.ogg-81df195ee0d9598d24502013313f2fe2.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

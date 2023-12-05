@@ -164,9 +164,11 @@ public class PupEnemy : KinematicBody2D, TakeDamage
 
     //required function for TakeDamage interface
     public void TakeDamage(int damage, Vector2? attackFromVector) {
-        GD.Print("pup hit " + damage.ToString());
         //if the cooldown timer for getting attacked has stopped 
-        if (take_damage_timer.IsStopped()) {health -= damage;}
+        if (take_damage_timer.IsStopped()) {
+            health -= damage;
+            GD.Print("pup hit " + damage.ToString() + " (" + health.ToString() + " HP)");    
+        }
         
         //check if character died
         if (health <= 0 && !is_dead) {

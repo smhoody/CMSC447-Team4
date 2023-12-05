@@ -1,7 +1,11 @@
 is_global = true
 build_property.RootNamespace = FinalProject
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 build_property.ProjectDir = D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\
+=======
+build_property.ProjectDir = D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\
+>>>>>>> Stashed changes
 =======
 build_property.ProjectDir = D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\
 >>>>>>> Stashed changes

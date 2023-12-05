@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/15 game over INITIAL.ogg-e3f99ed322a0a3be63aea383f280991e.oggstr"
+
+[deps]
+
+source_file="res://Music/15 game over INITIAL.ogg"
+dest_files=[ "res://.import/15 game over INITIAL.ogg-e3f99ed322a0a3be63aea383f280991e.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

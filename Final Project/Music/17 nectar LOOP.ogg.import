@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/17 nectar LOOP.ogg-d6bed59649aa14e252eca40051109964.oggstr"
+
+[deps]
+
+source_file="res://Music/17 nectar LOOP.ogg"
+dest_files=[ "res://.import/17 nectar LOOP.ogg-d6bed59649aa14e252eca40051109964.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0
