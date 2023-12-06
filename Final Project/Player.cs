@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Runtime;
+using System.Runtime.InteropServices;
 
 
 /**
@@ -13,7 +13,7 @@ public struct PlayerStatus {
     public int health;
 }
 
-public class Player : KinematicBody2D, TakeDamage
+public class Player : KinematicBody2D
 {
     [Export] public bool right = true;
     [Export] public int speed = 400;
@@ -33,29 +33,22 @@ public class Player : KinematicBody2D, TakeDamage
     private RayCast2D groundray;
     private RayCast2D leftray;
     private RayCast2D rightray;
-    private Hitbox hitbox;
-    private Hurtbox hurtbox;
 
     private Timer dash_timer; //for adjusting dash duration
-    public Timer dash_cooldown; //for adjusting dash duration
-    public float dash_cooldown_value = 1f; //literal dash cooldown
-    private float dash_upward_force = 14f; //vertical boost for an upward dash
+    private Timer dash_cooldown; //for adjusting dash duration
+    private float dash_cooldown_value = 1f; //literal dash cooldown
     private bool can_wall_jump = true;
     public int frame_counter; //used to count frames to measure seconds  
     public Queue<PlayerStatus> recall_statuses = new Queue<PlayerStatus>();
     private int recall_length = 2; //determines the number of seconds to store statuses (n - 1)
-    public Timer recall_cooldown; //cooldown for recall ability
-    public float recall_cooldown_value = 5f; //recall ability cooldown for player
-    private float recall_animation = 3f; 
+    private Timer recall_cooldown; //cooldown for recall ability
+    private float recall_cooldown_value = 5f; //recall ability cooldown for player
+    private float recall_animation = 3f;
+    public Label health_label; //visual label for health  
     public int health = 100; //actual health value
-    public Timer quick_attack_timer; //cooldown timer for quick attack (prevents spam)
-    public Timer heavy_attack_timer; //cooldown timer for heavy attack
-    //heart sprites for the hud
-    public AnimatedSprite heart1; 
-    public AnimatedSprite heart2;
-    public AnimatedSprite heart3;
-    public bool is_dead;
-    public Timer take_damage_timer;
+    public int health_tick = 60; //delete this
+    private Timer quick_attack_timer;
+    private Timer heavy_attack_timer;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -74,16 +67,12 @@ public class Player : KinematicBody2D, TakeDamage
 
         // Dash cooldown timer
         dash_cooldown = GetNode<Timer>("DashCooldown");
-        dash_cooldown.WaitTime = dash_cooldown_value; //set cooldown for dash
+        dash_cooldown.WaitTime = dash_cooldown_value; //cooldown for dash
         dash_cooldown.OneShot = true; 
 
-
-        // Health bar hearts
-        HUD hud = (HUD)GetNode("/root/HUD");
-        Panel health_bar = hud.GetChild<Panel>(1);
-        heart1 = health_bar.GetChild<AnimatedSprite>(0);
-        heart2 = health_bar.GetChild<AnimatedSprite>(1);
-        heart3 = health_bar.GetChild<AnimatedSprite>(2);
+        // Health bar
+        Camera2D cam = GetNode<Camera2D>("Camera2D");
+        health_label = cam.GetChild<Label>(0);
 
         // Attack timers
         quick_attack_timer = GetNode<Timer>("QuickAttackTimer");
@@ -93,10 +82,6 @@ public class Player : KinematicBody2D, TakeDamage
         recall_cooldown = GetNode<Timer>("RecallCooldown");
         recall_cooldown.WaitTime = recall_cooldown_value; //cooldown for recall
         recall_cooldown.OneShot = true;
-
-        //Received Damage Timer
-        take_damage_timer = GetNode<Timer>("TakeDamageTimer");
-
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -118,8 +103,13 @@ public class Player : KinematicBody2D, TakeDamage
         // check Recall ability 
         ProcessRecall();
 
-        // check health
-        UpdateHealth();
+        health_tick--;
+        if (health_tick == 0) {
+            health_tick = 60;
+            health--;
+            health_label.Text = health.ToString();
+        }
+
         
 
     }
@@ -144,7 +134,6 @@ public class Player : KinematicBody2D, TakeDamage
                 can_wall_jump = false; //only allow 1 jump once the player hits the wall
             }
         }
-        
         if (!IsOnWall()) {can_wall_jump = true;} //reset wall-jump flag when player leaves wall
 
         // DASH LOGIC-----------------------------
@@ -155,29 +144,17 @@ public class Player : KinematicBody2D, TakeDamage
         }
         if (!dash_timer.IsStopped()) { //while dashing is activated
             relative_speed = dash_speed;
-            if (Input.IsActionPressed("up")) {velocity.y -= dash_upward_force;} //apply upward momentum if moving up
+            if (Input.IsActionPressed("up")) {velocity.y -= 10;} //apply upward momentum if moving up
         }
         
-        /*
-        ---RECALL LOGIC---------------------------
-        1) check if recall key is pressed
-        2) ensure there's at least 1 recall point in the queue
-        3) ensure recall cooldown is not active  
-        */
+        // RECALL LOGIC---------------------------
         if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1
             && recall_cooldown.IsStopped()) {
             recall_cooldown.Start();
             PlayerStatus status = recall_statuses.Peek(); //get oldest status
             this.Position = status.position; //set player position to the position in that status
             health = status.health; //set player health to what it was in that status
-            //update health visual
-        }
-
-        /*
-        ---Quick Attack Logic----------------------
-        */
-        if (Input.IsActionJustPressed("quick_attack") && quick_attack_timer.IsStopped()) {
-            hitbox.SetAttackFromVector(this.GlobalPosition);
+            health_label.Text = health.ToString(); //update health label
         }
 
         //adjust horizontal speed
@@ -198,42 +175,45 @@ public class Player : KinematicBody2D, TakeDamage
                     _animatedSprite.Stop(); //stop all animations
                     _animatedSprite.Animation = "jump"; //set animation type
                     _animatedSprite.Frame = 1; //set frame
-                    // GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
+                    GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
                 } else {
                     _animatedSprite.Play("jump");
-                    // GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
+                    GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
+                    // if (Input.IsActionPressed("left")) {_animatedSprite.RotationDegrees = -7;}
+                    // else if (Input.IsActionPressed("right")) {_animatedSprite.RotationDegrees = 7;}
                 }
                 if (!dash_timer.IsStopped()) {
                     _animatedSprite.Animation = "run";
                     _animatedSprite.Frame = 2;
-                    // Flipping mechanics
-                    // switch (Input.IsActionPressed("left")) {
-                    //     case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
-                    //     case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
-                    // }
+                    switch (Input.IsActionPressed("left")) {
+                        case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
+                        case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
+                    }
                 }
             } else { //player is on the ground
                 //reset possible rotations from jumping 
                 _animatedSprite.RotationDegrees = 0;
                 //player is moving to the right
                 if (Input.IsActionPressed("right")) {
-                    // GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
+                    GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.FlipH = false;
+                    // _animatedSprite.RotationDegrees = 10; //add slight tilt to the right
                     _animatedSprite.Play("run");
                 }
                 //player is moving to the left
                 else if (Input.IsActionPressed("left")) {
-                    // GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
+                    GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.FlipH = true;
+                    // _animatedSprite.RotationDegrees = -10; //add slight tilt to the left
                     _animatedSprite.Play("run");
                 }
                 //no movement is happening, play idle animation
                 else {
-                    // GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
+                    GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
                     _animatedSprite.Play("idle");
                 }
             }
-        }//end if quick_attack_timer.IsStopped()
+        } 
         
         // Attack animation checks
         if (Input.IsActionJustPressed("quick_attack")) {
@@ -272,52 +252,13 @@ public class Player : KinematicBody2D, TakeDamage
     }
 
     public void CheckWall(float delta) {
-        //if on wall and moving toward the wall
         if (IsOnWall() && (Input.IsActionPressed("right")||Input.IsActionPressed("left"))) {
             if (velocity.y >= 0) { //if moving down, slow the descent
                 velocity.y = Math.Min(velocity.y + wall_slide_animation, max_wall_slide_speed);
             } else {
-                // Apply normal gravity when not moving toward wall
+                // Apply gravity
                 velocity.y += gravity*mass;
             }
-        } else {velocity.y += gravity*mass;} //? idk y
-    }
-
-<<<<<<< Updated upstream
-    /**
-    Helper function to update the visual health bar based on health value
-    */
-    public void UpdateHealth() {
-        if (health < 68) {heart3.Frame = 2;}
-        else if (health < 84) {heart3.Frame = 1;} 
-        if (health < 37) {heart2.Frame = 2;}
-        else if (health < 52) {heart2.Frame = 1;} 
-        if (health <= 0) {heart1.Frame = 2;}
-        else if (health < 20) {heart1.Frame = 1;}  
-         
-    }
-
-
-    public void TakeDamage(int damage, Vector2? attackFromVector) {
-        health -= damage;
-        UpdateHealth();
-        
-        //check if player died
-        if (health <= 0 && !is_dead) {
-            is_dead = true;
-            GD.Print("dead");
-        } else {
-            if (attackFromVector != null) {
-                //start cooldown timer for taking damage (player is immune for this duration)
-                take_damage_timer.Start();
-            }
-        }
+        } else {velocity.y += gravity*mass;}
     }
 }
-=======
-    public void Die()
-    {
-        GameManager.RespawnPlayer();
-    }
-}
->>>>>>> Stashed changes

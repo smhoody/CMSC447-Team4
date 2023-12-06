@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://resources/Anim/torch-A-04.png" type="Texture" id=1]
+[ext_resource path="res://resources/Anim/torch-A-03.png" type="Texture" id=2]
+[ext_resource path="res://resources/Anim/torch-A-02.png" type="Texture" id=3]
+[ext_resource path="res://resources/Anim/torch-A-01.png" type="Texture" id=4]
+[ext_resource path="res://Misc/Torch_Left.cs" type="Script" id=5]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Torch"
+length = 0.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 4 ), ExtResource( 3 ), ExtResource( 2 ), ExtResource( 1 ) ]
+}
+
+[node name="Torch_Left" type="Node2D"]
+z_index = -1
+script = ExtResource( 5 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Torch = SubResource( 1 )

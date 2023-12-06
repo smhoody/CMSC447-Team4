@@ -3,16 +3,8 @@ using System;
 
 public class GameManager : Node
 {
-    public static RespawnPoint current_checkpoint;
-    public static Player player;
-
-    public static void RespawnPlayer()
-    {
-        if(current_checkpoint != null)
-        {
-            player.position = current_checkpoint.GlobalPosition;
-        }
-    }
-
-    
+    // maintains audio slider position after changing scenes
+    public static double pos_master = 1;
+    public static double pos_music = 1;
+    public static double pos_sfx = 1;
 }

@@ -77,7 +77,6 @@ position = Vector2( 0, -6 )
 scale = Vector2( 0.05, 0.05 )
 frames = SubResource( 8 )
 animation = "idle"
-frame = 1
 
 [node name="DownLeftRay" type="RayCast2D" parent="."]
 position = Vector2( -11, 3 )
