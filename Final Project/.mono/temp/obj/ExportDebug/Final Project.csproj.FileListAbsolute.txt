@@ -1,0 +1,9 @@
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\bin\ExportDebug\Final Project.dll
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\bin\ExportDebug\Final Project.pdb
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.csproj.AssemblyReference.cache
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.GeneratedMSBuildEditorConfig.editorconfig
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.AssemblyInfoInputs.cache
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.AssemblyInfo.cs
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.csproj.CoreCompileInputs.cache
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.dll
+D:\documents\School stuff\University\UMBC\6th Semester\CMSC 447\DatingSimulator\Final Project\Final Project\.mono\temp\obj\ExportDebug\Final Project.pdb

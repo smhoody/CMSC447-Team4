@@ -1,8 +1,12 @@
+/**
+    Player mechanics & animation implementation
+
+@Author Steven Hoodikoff
+*/
 using Godot;
 using System;
 using System.Collections.Generic;
 using System.Runtime;
-
 
 /**
     Object to hold player info such as global position and health 
@@ -13,9 +17,8 @@ public struct PlayerStatus {
     public int health;
 }
 
-public class Player : KinematicBody2D, TakeDamage
+public class Player : KinematicBody2D
 {
-    [Export] public bool right = true;
     [Export] public int speed = 400;
     [Export] public int dash_speed = 1000;
     [Export] public float gravity = 9.81f;
@@ -35,7 +38,9 @@ public class Player : KinematicBody2D, TakeDamage
     private RayCast2D rightray;
     private Hitbox hitbox;
     private CollisionShape2D hitbox_collision_obj;
+    private Vector2 hitbox_position = new Vector2(6, 4);
     private Hurtbox hurtbox;
+    private CollisionShape2D hurtbox_collision_obj;
 
     private Timer dash_timer; //for adjusting dash duration
     public Timer dash_cooldown; //cooldown timer for dash ability
@@ -50,6 +55,7 @@ public class Player : KinematicBody2D, TakeDamage
     private float recall_animation_length = 2f; //length of recall animation
     public Light2D recall_light; //light node for visual effects of recall
     public Timer recall_duration; //duration of recall animation
+    private bool recall_started = false;
     public int health = 100; //actual health value
     public Timer quick_attack_duration; //timer to keep track of quick attack duration
     public Timer heavy_attack_duration; //timer to keep track of heavy attack duration
@@ -64,8 +70,13 @@ public class Player : KinematicBody2D, TakeDamage
     public bool is_dead = false; //flag for character death
     public Timer take_damage_timer; //timer to prevent player from taking damage every frame
     public Light2D light;
-    private Vector2 target_position;
+    private Vector2 target_position; //position vector for re-locating the player
+    private double distance = 1; //distant to target position
     private CollisionShape2D player_collision_box;
+    private const bool RIGHT = false; //definition for facing right
+    private const bool LEFT = true; //definition for facing left
+    
+
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -104,7 +115,8 @@ public class Player : KinematicBody2D, TakeDamage
         recall_light = GetNode<Light2D>("Abilities/Recall_Light"); 
 
         // Health bar hearts
-        HUD hud = (HUD)GetNode("/root/HUD");
+        HUD hud = (HUD)this.GetParent().GetNode("HUD"); //(HUD)GetNode("HUD");
+        
         Panel health_bar = hud.GetChild<Panel>(1);
         heart1 = health_bar.GetChild<AnimatedSprite>(0);
         heart2 = health_bar.GetChild<AnimatedSprite>(1);
@@ -125,6 +137,11 @@ public class Player : KinematicBody2D, TakeDamage
         hitbox = GetNode<Hitbox>("Hitbox");
         hitbox_collision_obj = hitbox.GetChild<CollisionShape2D>(0);
         hitbox_collision_obj.Disabled = true;
+        
+
+        // Player hurtbox
+        hurtbox = GetNode<Hurtbox>("Hurtbox");
+        hurtbox_collision_obj = hurtbox.GetChild<CollisionShape2D>(0);
 
         light = GetNode<Light2D>("Light2D");
         
@@ -153,7 +170,7 @@ public class Player : KinematicBody2D, TakeDamage
         UpdateHealth();
         
         if (hitbox_collision_obj.Disabled) {light.Enabled = false;}
-        else {light.Enabled = true;}
+        else {GD.Print("hitbox enable");}
     }
 
     public void GetInput(float delta) {
@@ -162,25 +179,12 @@ public class Player : KinematicBody2D, TakeDamage
         //change depending on if the character is dashing/rolling
         int relative_speed = speed; 
         
-        /* During recall animation:
-        1) MoveAndSlide the player on the X axis from current position to previous position
-        2) MoveAndSlide the player on the Y axis from current position to previous position
-        3) Disable Player collision box so that it can move through objects
-        4) Return so that no input is read
-        */
-        if (!recall_duration.IsStopped()) {
-            //Calculate velocity needed to get player to new location
-            velocity.x = target_position.x - this.Position.x > 0 ? relative_speed : relative_speed*-1;
-            velocity.y = target_position.y - this.Position.y > 0 ? relative_speed : relative_speed*-1;
-            
-            //Keep collision box disabled
-            player_collision_box.Disabled = true;
+        //check if recall is active
+        if (CheckRecallActive()) {return;}
 
-            // Move character
-            velocity = MoveAndSlide(velocity); 
-            return;
-        } 
-        player_collision_box.Disabled = false;
+        recall_started = false; //reset recall flag because recall is over
+        player_collision_box.Disabled = false; //enable player collision box
+        hurtbox_collision_obj.Disabled = false; //enable player hurtbox
 
         //WALKING LOGIC--------------------------   
         if (Input.IsActionPressed("right")) {velocity.x += 1;}
@@ -218,41 +222,32 @@ public class Player : KinematicBody2D, TakeDamage
         */
         if (Input.IsActionJustPressed("recall") && recall_statuses.Count >= 1
             && recall_cooldown.IsStopped()) {
-            recall_cooldown.Start();
-            recall_duration.Start();
+            recall_cooldown.Start(); //begin ability cooldown timer
+            recall_duration.Start(); //begin animation timer
             PlayerStatus status = recall_statuses.Peek(); //get oldest status
             target_position = status.position; //save position from status to target position 
-            // this.Position = status.position; //set player position to the position in that status
             health = status.health; //set player health to what it was in that status
-            //update health visual
         }
 
         /*
-        ---Quick Attack Logic----------------------
+        ---Quick/Heavy Attack Logic----------------------
         */
-        if (quick_attack_cooldown.IsStopped()) {
-            //while the player is not attacking, disable hitbox
-            hitbox_collision_obj.Disabled = true; 
+        hitbox_collision_obj.Disabled = true; //disable hitbox by default
+        if (quick_attack_cooldown.IsStopped() && heavy_attack_cooldown.IsStopped()) {
+
+            //Check if Quick attack is activated
             if (Input.IsActionJustPressed("quick_attack")) { 
-                hitbox_collision_obj.Disabled = false;
-                hitbox.setDamage(quick_attack_damage);
-                hitbox.SetAttackFromVector(this.GlobalPosition);
-                quick_attack_cooldown.Start();
+                hitbox_collision_obj.Disabled = false; //enable hitbox
+                hitbox.setDamage(quick_attack_damage); //set damage to preset quick attack value 
+                quick_attack_cooldown.Start(); //begin cooldown for quick attack
+                quick_attack_duration.Start(); //timer represents the duration of the attack
             }
-            hitbox_collision_obj.Disabled = true; 
-        }
-
-        /*
-        ---Heavy Attack Logic----------------------
-        */
-        if (heavy_attack_cooldown.IsStopped()) {
-            //while the player is not attacking, disable hitbox
-            hitbox_collision_obj.Disabled = true; 
-            if (Input.IsActionJustPressed("heavy_attack")) { 
+            //Check if Heavy attack is activated (same logic as above)
+            else if (Input.IsActionJustPressed("heavy_attack")) { 
                 hitbox_collision_obj.Disabled = false;
                 hitbox.setDamage(heavy_attack_damage);
-                hitbox.SetAttackFromVector(this.GlobalPosition);
                 heavy_attack_cooldown.Start();
+                heavy_attack_duration.Start();
             }
         }
         
@@ -264,10 +259,7 @@ public class Player : KinematicBody2D, TakeDamage
     }
 
     public void CheckAnimations(float delta) {
-        //player is moving to the right
-        if (Input.IsActionPressed("right")) { _animatedSprite.FlipH = false;}
-        //player is moving to the left
-        else if (Input.IsActionPressed("left")) {_animatedSprite.FlipH = true;}
+        //priority of animations goes TOP DOWN (e.g., recall is highest, then attacking, etc.)
 
 
         //check if Recall was just recently activated (recall_duration is started by GetInput()) 
@@ -280,78 +272,63 @@ public class Player : KinematicBody2D, TakeDamage
         if (!recall_duration.IsStopped()) {return;} //play no other animations while recall is active
         else {recall_light.Enabled = false;} //disable Light effect if recall is over
 
-        //if attack animation is active, refrain from movement animations
-        if (quick_attack_duration.IsStopped() && heavy_attack_duration.IsStopped()) {
-            // Attack animation checks
-            if (Input.IsActionJustPressed("quick_attack")) {
-                // GD.Print(quick_attack_cooldown.IsStopped());
-                quick_attack_duration.Start(); //timer represents the duration of the attack
-                _animatedSprite.Play("quick_attack");
-                return;
-            } else if (Input.IsActionJustPressed("heavy_attack")) {
-                heavy_attack_duration.Start(); //timer represents the duration of the attack
-                _animatedSprite.Play("heavy_attack");
-                return;
-            }
+        // Attack animation checks (duration timer is started by GetInput())
+        if (Input.IsActionJustPressed("quick_attack") && !quick_attack_duration.IsStopped()) {
+            _animatedSprite.Play("quick_attack");
+            return; //if attack animation is active, refrain from movement animations            
 
-            //if player is not on the ground, play jumping animation
-            if (!groundray.IsColliding()) {
-                //check if player is on a wall
-                if (leftray.IsColliding()) {
-                    _animatedSprite.Stop();
-                    _animatedSprite.Animation = "wall_sliding";
-                    _animatedSprite.Frame = 0;
-                    _animatedSprite.FlipH = true;
-                } 
-                else if (rightray.IsColliding()) {
-                    _animatedSprite.Stop();
-                    _animatedSprite.Animation = "wall_sliding";
-                    _animatedSprite.Frame = 1;
-                    _animatedSprite.FlipH = false;
-                    // GD.Print("on wall " + Convert.ToString(Time.GetTicksMsec()));
-                } else {
-                    _animatedSprite.Play("jump");
-                    // GD.Print("jumping " + Convert.ToString(Time.GetTicksMsec()));
-                }
-                if (!dash_timer.IsStopped()) {
-                    _animatedSprite.Play("dash");
-                    // Flipping mechanics
-                    // switch (Input.IsActionPressed("left")) {
-                    //     case true: _animatedSprite.Rotate((float)(Math.PI/6.2*-1)); break;
-                    //     case false: _animatedSprite.Rotate((float)(Math.PI/6.2)); break;
-                    // }
-                }
-            } else { //player is on the ground
-                
-                
-                //check direction again to see if running animation needs to be played
-                //player is moving to the right
-                if (Input.IsActionPressed("right")) {
-                    // GD.Print("moving right " + Convert.ToString(Time.GetTicksMsec()));
-                    _animatedSprite.Play("run");
-                }
-                //player is moving to the left
-                else if (Input.IsActionPressed("left")) {
-                    // GD.Print("moving left " + Convert.ToString(Time.GetTicksMsec()));
-                    _animatedSprite.Play("run");
-                }
-                //no movement is happening, play idle animation
-                else {
-                    // GD.Print("idling " + Convert.ToString(Time.GetTicksMsec()));
-                    _animatedSprite.Play("idle");
-                }
-            }
+        } 
+        if (Input.IsActionJustPressed("heavy_attack") && !heavy_attack_duration.IsStopped()) {
+            _animatedSprite.Play("heavy_attack");
+            return;
+        }
 
+        //player is moving to the right
+        if (Input.IsActionPressed("right")) { FlipPlayer(RIGHT);}
+        //player is moving to the left
+        else if (Input.IsActionPressed("left")) {FlipPlayer(LEFT);}
+
+        //if player is not on the ground, play jumping animation
+        if (!groundray.IsColliding()) {
+            //check if player is on a wall to their left
+            if (leftray.IsColliding()) {
+                _animatedSprite.Stop();
+                _animatedSprite.Animation = "wall_sliding";
+                _animatedSprite.Frame = 0;
+                FlipPlayer(LEFT);
+            } 
+            //check if player is on a wall to their left
+            else if (rightray.IsColliding()) {
+                _animatedSprite.Stop();
+                _animatedSprite.Animation = "wall_sliding";
+                _animatedSprite.Frame = 1;
+                FlipPlayer(RIGHT);
+            } else { //else, player is not on the ground and not on a wall: play Jump
+                _animatedSprite.Play("jump");
+            }
+            if (!dash_timer.IsStopped()) { //if dash is active, play dash
+                _animatedSprite.Play("dash");
+            }
+        } else { //player is on the ground
             
+            
+            //check direction again to see if running animation needs to be played
+            //player is moving to the right
+            if (Input.IsActionPressed("right")) {
+                _animatedSprite.Play("run");
+            }
+            //player is moving to the left
+            else if (Input.IsActionPressed("left")) {
+                _animatedSprite.Play("run");
+            }
+            //no movement is happening, play idle animation
+            else {
+                _animatedSprite.Play("idle");
+            }
+        }
 
-        }//end if quick/heavy_attack_timer.IsStopped()
-        
-        
-        
-        
 
     }
-
 
 
     /**
@@ -373,6 +350,53 @@ public class Player : KinematicBody2D, TakeDamage
         }
     }
 
+    /**
+    Checks state of Recall ability and updates player position if active 
+    @return bool : true if Recall active, false if Recall inactive
+    */
+    private bool CheckRecallActive() {
+        /* During recall animation:
+        1) Calculate distance from current position to target position
+        2) Use the distance to scale speed toward target (farther = faster, closer = slower) 
+        1) MoveAndSlide the player on the X axis from current position to previous position
+        2) MoveAndSlide the player on the Y axis from current position to previous position
+        3) Disable Player collision box & hurtbox so that it can move through objects & doesn't take damage
+        */
+        if (!recall_duration.IsStopped()) {
+            //reset distance value if it wasn't already reset and this is the first iteration of recalling
+            if (distance > 0 && !recall_started) {distance = 0;}
+
+            //calculate distance to target (distance function = sqrt((x2-x1)^2 + (y2-y1)^2)
+            double current_distance = Math.Sqrt(Math.Pow(target_position.x - this.Position.x, 2) + Math.Pow(target_position.y - this.Position.y, 2));
+            //if recall hasn't begun, use current distance because it is essentialy the initial distance to the target
+            //if recall has begun, use distance, which will be the value of the first current_distance (initial distance)
+            distance = recall_started ? distance : current_distance; 
+            //convert to a percentage (e.g. if curr_dist=14 & dist=20, progress=0.3 or 30% because the goal is distance of 0 to target)
+            double progress_to_target = 1 - (current_distance / distance);
+            //need to move 3x faster than default speed and subtract so that early in recall state = higher speed, later = slower
+            //e.g. if progress is 0.3, then speed = 3*speed - (3*speed*0.3) = 3*speed - speed = 2*speed
+            //     if progress is 0.8, then speed = 3*speed - (3*speed*0.8) = 3*speed - 2.4*speed = 0.6*speed 
+            int relative_speed = Convert.ToInt32(3*speed - (3*speed * progress_to_target));
+
+            //Calculate velocity needed to get player to new location
+            velocity.x = target_position.x - this.Position.x > 0 ? relative_speed : relative_speed*-1;
+            velocity.y = target_position.y - this.Position.y > 0 ? relative_speed : relative_speed*-1;
+            
+            //Keep collision box and hurtbox disabled so player can go through walls if needed
+            // and they won't take damage from enemies.
+            player_collision_box.Disabled = true;
+            hurtbox_collision_obj.Disabled = true;
+            recall_started = true; //set recall flag to true so that distance will not use current_distance
+
+            // Move character
+            velocity = MoveAndSlide(velocity); 
+            velocity.x = 0;
+            return true; //recall active
+        }
+
+        return false; //recall inactive
+    }
+
     public void CheckWall(float delta) {
         //if on wall and moving toward the wall
         if (IsOnWall() && (Input.IsActionPressed("right")||Input.IsActionPressed("left"))) {
@@ -389,37 +413,62 @@ public class Player : KinematicBody2D, TakeDamage
     Helper function to update the visual health bar based on health value
     */
     public void UpdateHealth() {
-        if (health < 68) {heart3.Frame = 2;}
-        else if (health < 84) {heart3.Frame = 1;} 
-        if (health < 37) {heart2.Frame = 2;}
-        else if (health < 52) {heart2.Frame = 1;} 
-        if (health <= 0) {heart1.Frame = 2;}
-        else if (health < 20) {heart1.Frame = 1;}  
+        //need to check each heart state so that when player regains health,
+        // all hearts are updated.
+
+        if (health < 68) {heart3.Frame = 2;}      // Heart 3 = empty
+        else if (health < 84) {heart3.Frame = 1;} // Heart 3 = half
+        else {heart3.Frame = 0;}                  // Heart 3 = full
+        if (health < 37) {heart2.Frame = 2;}      // Heart 2 = empty
+        else if (health < 52) {heart2.Frame = 1;} // Heart 2 = half
+        else {heart2.Frame = 0;}                  // Heart 2 = full
+        if (health <= 0) {heart1.Frame = 2;}      // Heart 1 = empty
+        else if (health < 20) {heart1.Frame = 1;} // Heart 1 = half
+        else {heart1.Frame = 0;}                  // Heart 1 = full
     }
 
+    /**
+    Flips player sprite and moves hitbox to the side the player is facing
+    */
+    private void FlipPlayer(bool flipToLeft) {
+        //if we are flipping to left, the position of the hitbox needs to be moved to the left side
+        if (flipToLeft) {hitbox.Position = new Vector2(-12, 4);} 
+        else            {hitbox.Position = new Vector2(6, 4);} //else the player is flipping right, so move to the right
 
-    public void TakeDamage(int damage, Vector2? attackFromVector) {
-        //if the cooldown timer for getting attacked has not stopped, return 
-        if (!take_damage_timer.IsStopped()) {return;}
+        _animatedSprite.FlipH = flipToLeft; //flip player sprite: false = face right, true = face left
+    }
 
-
-        health -= damage;
-        UpdateHealth();
+    private void _on_Hurtbox_area_entered(Area2D area) {
+        CollisionShape2D col = area.GetChild<CollisionShape2D>(0);
+        GD.Print(col.Name);
+        // EXIT IF:
+        // 1) if not a hitbox (in which case area is a hurtbox)
+        // 2) if incoming hitbox is not enabled
+        if (!(area is Hitbox) || col.Disabled) {return;} 
         
-        //check if player died
+        //Convert to hitbox type to get damage data
+        Hitbox incoming_hitbox = (Hitbox) area;
+        int incoming_damage = incoming_hitbox.getDamage();
+        GD.Print(col.Name + " deals " + incoming_damage.ToString());
+        
+        health -= incoming_damage;
+        UpdateHealth(); //update health on HUD 
+        GD.Print("player hit " + incoming_damage.ToString() + " (" + health.ToString() + " HP)");    
+        
+
+        //check if character died
         if (health <= 0 && !is_dead) {
-            is_dead = true;
-            GD.Print("player dead");
-        } else {
-            if (attackFromVector != null) {
-                //start cooldown timer for taking damage (player is immune for this duration)
-                take_damage_timer.Start();
-            }
+            
+        } else { //character not dead, begin cooldown timer
+            //start cooldown timer for taking damage (player is immune for this duration)
+            take_damage_timer.Start();
         }
     }
 
-    public void Die()
-    {
-        GameManager.RespawnPlayer();
+    private void Die() {
+        is_dead = true;
+        // QueueFree();
+        GD.Print("player dead");
     }
+
 }

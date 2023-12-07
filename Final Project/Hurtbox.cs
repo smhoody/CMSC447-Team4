@@ -19,23 +19,12 @@ using System;
 public class Hurtbox : Area2D {
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        var layersAndMasks = (LayersAndMasks)GetNode("/root/LayersAndMasks");
-        //CollisionLayer = 0; //collide with nothing
-        //CollisionMask = layersAndMasks.GetCollisionLayerByName("Hitbox"); //can collide with hitbox
+    public override void _Ready() {
         Connect("area_entered", this, nameof(OnAreaEntered)); //when collision, use OnAreaEntered()
     }
 
 
     private void OnAreaEntered(Hitbox hitbox) {
-        CollisionShape2D col = hitbox.GetChild<CollisionShape2D>(0);
-        GD.Print("hitbox enabled: " + col.Disabled.ToString());
-        if (hitbox == null || col.Disabled == true) {return;}
 
-        //get the node owner of the hitbox that has collided 
-        TakeDamage ownerTakeDamage = (TakeDamage)Owner;
-        //apply damage function to owner
-        ownerTakeDamage.TakeDamage(hitbox.damage, hitbox.AttackFromVector);
     }
 }

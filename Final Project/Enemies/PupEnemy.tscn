@@ -1,8 +1,10 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Enemies/PupEnemy.cs" type="Script" id=1]
 [ext_resource path="res://resources/Enemies/Pup/Pup_Sprites.png" type="Texture" id=2]
 [ext_resource path="res://Hurtbox.cs" type="Script" id=3]
+[ext_resource path="res://Hitbox.cs" type="Script" id=4]
+[ext_resource path="res://resources/Enemies/Pup/pup_take_damage.png" type="Texture" id=5]
 
 [sub_resource type="AtlasTexture" id=13]
 flags = 4
@@ -44,6 +46,11 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 3375, 1396, 1125, 698 )
 
+[sub_resource type="AtlasTexture" id=23]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 2094, 1125, 698 )
+
 [sub_resource type="SpriteFrames" id=8]
 animations = [ {
 "frames": [ SubResource( 13 ), SubResource( 14 ) ],
@@ -60,16 +67,21 @@ animations = [ {
 "loop": true,
 "name": "run",
 "speed": 5.0
+}, {
+"frames": [ SubResource( 23 ), ExtResource( 5 ) ],
+"loop": true,
+"name": "take_damage",
+"speed": 5.0
 } ]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 9, 6 )
 
-[sub_resource type="RectangleShape2D" id=11]
-extents = Vector2( 10.5, 5 )
+[sub_resource type="CircleShape2D" id=21]
+radius = 7.91139
 
-[sub_resource type="RectangleShape2D" id=12]
-extents = Vector2( 9, 6 )
+[sub_resource type="CircleShape2D" id=22]
+radius = 9.94695
 
 [node name="PupEnemy" type="KinematicBody2D"]
 collision_layer = 4
@@ -80,7 +92,7 @@ follow_distance = 350.0
 position = Vector2( -1, 0 )
 scale = Vector2( 0.0225694, 0.0173912 )
 frames = SubResource( 8 )
-animation = "idle"
+animation = "take_damage"
 
 [node name="DownLeftRay" type="RayCast2D" parent="."]
 position = Vector2( -11, 3 )
@@ -99,32 +111,38 @@ cast_to = Vector2( 10, 0 )
 
 [node name="AttackDuration" type="Timer" parent="."]
 wait_time = 0.2
+one_shot = true
 
 [node name="AttackCooldown" type="Timer" parent="."]
+wait_time = 0.33
+one_shot = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2( 0, 1 )
 shape = SubResource( 1 )
 
 [node name="TakeDamageTimer" type="Timer" parent="."]
 wait_time = 0.5
+one_shot = true
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 4
-collision_mask = 2
+collision_mask = 8
+script = ExtResource( 4 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2( -0.5, 1 )
-shape = SubResource( 11 )
+[node name="PupHitboxCollision" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( -1, 1 )
+scale = Vector2( 1.49, 0.962 )
+shape = SubResource( 21 )
 
 [node name="Hurtbox" type="Area2D" parent="."]
-collision_layer = 4
+collision_layer = 16
 collision_mask = 2
 script = ExtResource( 3 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="PupHurtboxCollision" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2( 0, 1 )
-shape = SubResource( 12 )
+scale = Vector2( 1.508, 0.783 )
+shape = SubResource( 22 )
 
-[connection signal="area_entered" from="Hitbox" to="." method="_on_Hitbox_area_entered"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

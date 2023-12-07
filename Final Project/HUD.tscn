@@ -52,6 +52,7 @@ animations = [ {
 } ]
 
 [node name="HUD" type="CanvasLayer"]
+follow_viewport_enable = true
 script = ExtResource( 4 )
 
 [node name="dash_cooldown_panel" type="Node" parent="."]
