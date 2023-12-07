@@ -1,0 +1,164 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://resources/Enemies/Bat/Bat_Sprites.png" type="Texture" id=1]
+[ext_resource path="res://Hitbox.cs" type="Script" id=2]
+[ext_resource path="res://Hurtbox.cs" type="Script" id=3]
+[ext_resource path="res://Enemies/BatEnemy.cs" type="Script" id=4]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 900, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 1800, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 2700, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 3600, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 900, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 3600, 0, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 587, 900, 587 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 900, 587, 900, 587 )
+
+[sub_resource type="SpriteFrames" id=8]
+animations = [ {
+"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ) ],
+"loop": true,
+"name": "attack",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 5 ), SubResource( 6 ), SubResource( 7 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 13 ), SubResource( 14 ) ],
+"loop": true,
+"name": "take_damage",
+"speed": 5.0
+} ]
+
+[sub_resource type="CircleShape2D" id=9]
+
+[sub_resource type="CircleShape2D" id=10]
+radius = 179.18
+
+[sub_resource type="CircleShape2D" id=11]
+radius = 196.99
+
+[sub_resource type="Curve" id=12]
+_data = [ Vector2( 0, 0.904545 ), 0.0, -0.0734545, 0, 0, Vector2( 0.381188, 0.668182 ), 0.0, 0.0, 0, 0, Vector2( 0.935644, 0 ), 0.0, 0.0, 0, 0 ]
+
+[node name="BatEnemy" type="KinematicBody2D"]
+collision_layer = 4
+script = ExtResource( 4 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+frames = SubResource( 8 )
+animation = "take_damage"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 14.552 )
+scale = Vector2( 12.704, 10.892 )
+shape = SubResource( 9 )
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 8
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+scale = Vector2( 2.427, 1.043 )
+shape = SubResource( 10 )
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+script = ExtResource( 3 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+scale = Vector2( 3.176, 1.506 )
+shape = SubResource( 11 )
+
+[node name="DownRay" type="RayCast2D" parent="."]
+scale = Vector2( 20.208, 14.923 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="UpRay" type="RayCast2D" parent="."]
+scale = Vector2( 20, -11.371 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="RightRay" type="RayCast2D" parent="."]
+rotation = 1.5708
+scale = Vector2( 20, -13.498 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="LeftRay" type="RayCast2D" parent="."]
+rotation = -1.5708
+scale = Vector2( 20, -14.052 )
+enabled = true
+cast_to = Vector2( 0, 11 )
+
+[node name="AttackCooldown" type="Timer" parent="."]
+
+[node name="AttackDuration" type="Timer" parent="."]
+
+[node name="DeathTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="DeathParticles" type="CPUParticles2D" parent="."]
+position = Vector2( 2.37, 9.471 )
+scale = Vector2( 17, 17 )
+emitting = false
+amount = 16
+lifetime = 0.4
+one_shot = true
+speed_scale = 0.4
+explosiveness = 1.0
+emission_shape = 1
+emission_sphere_radius = 3.0
+spread = 180.0
+initial_velocity = 73.39
+initial_velocity_random = 0.06
+scale_amount = 1.7
+scale_amount_curve = SubResource( 12 )
+color = Color( 0.501961, 0.756863, 0.909804, 1 )
+
+[node name="TakeDamageTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

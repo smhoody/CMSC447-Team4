@@ -1,18 +1,17 @@
 using Godot;
 using System;
 
-public class SpiderEnemy : KinematicBody2D
+public class BatEnemy : KinematicBody2D
 {
-    // Exported variables
     [Export] public float gravity = 9.81f;
     [Export] public float mass = 0.8f;
-    [Export] public float jump_power = 300f;
-    [Export] public float speed = 200f;
+    [Export] public float dive_power = 300f;
+    [Export] public float speed = 100f;
     [Export] public float attack_speed = 500f;
     [Export] public float follow_distance = 500f;
-    [Export] public float attack_distance = 80f;
-    [Export] public int damage = 17;
-    [Export] public int health = 120;
+    [Export] public float attack_distance = 130f;
+    [Export] public int damage = 25;
+    [Export] public int health = 70;
 
 
     private int moveDirection = -1;
@@ -24,9 +23,10 @@ public class SpiderEnemy : KinematicBody2D
     public Vector2 player_position = new Vector2();
     public Vector2 target_position = new Vector2();
     private AnimatedSprite _animatedSprite;
-    private RayCast2D castDownRight;
-    private RayCast2D castDownLeft;
-    private RayCast2D castLookAhead;
+    private RayCast2D castDown;
+    private RayCast2D castLeft;
+    private RayCast2D castRight;
+    private RayCast2D castUp;
     private KinematicBody2D player_node;
     private Player player;
     public bool is_dead = false;
@@ -38,20 +38,18 @@ public class SpiderEnemy : KinematicBody2D
     private CPUParticles2D death_particles;
     private Timer death_timer;
     private SoundController sound;
-
     public override void _Ready()
-    {   
+    {
         // Get SoundController Node for playing Spider sounds
         sound = GetNode<SoundController>("/root/SoundController");
 
-        // Both used to check floor collisions
-        castDownLeft = GetNode<RayCast2D>("DownLeftRay");
-        castDownRight = GetNode<RayCast2D>("DownRightRay");
+        // Used to check Wall/Floor collisions
+        castLeft = GetNode<RayCast2D>("LeftRay");
+        castRight = GetNode<RayCast2D>("RightRay");
+        castUp = GetNode<RayCast2D>("UpRay");
+        castDown = GetNode<RayCast2D>("DownRay");
 
-        // Used to check wall/player collisions
-        castLookAhead = GetNode<RayCast2D>("LookRay"); 
-
-        // Player sprite
+        // Bat sprite
         _animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
         // Used to obtain the position of the Player
@@ -68,13 +66,10 @@ public class SpiderEnemy : KinematicBody2D
         //Received Damage Timer
         take_damage_timer = GetNode<Timer>("TakeDamageTimer");
 
-        // Spider hitbox
+        // Bat hitbox
         hitbox = GetNode<Hitbox>("Hitbox");
-        //Node n = GetNode("Hitbox");
-        //GD.Print(n.GetType());
         hitbox_collision_obj = hitbox.GetChild<CollisionShape2D>(0);
-
-        hitbox.setDamage(damage); //set attack damage for Spider
+        hitbox.setDamage(damage); //set attack damage for Bat
 
         //Death sequence nodes
         death_particles = GetNode<CPUParticles2D>("DeathParticles");
@@ -83,23 +78,8 @@ public class SpiderEnemy : KinematicBody2D
 
     public override void _Process(float delta)
     {
-        if(ProcessTurn())
-        {
-            moveDirection *= -1;
-        }
-        castLookAhead.CastTo = new Vector2(19*moveDirection, 0);
-    }
-
-    public override void _PhysicsProcess(float delta)
-    {
-        ApplyGravity(delta);
         HandleMovement(delta);
         CheckAnimations(delta);
-    }
-
-    public void ApplyGravity(float delta)
-    {
-        velocity.y += mass*gravity;
     }
 
     public void HandleMovement(float delta)
@@ -110,15 +90,17 @@ public class SpiderEnemy : KinematicBody2D
 
         player_position = player_node.Position;
         target_position.x = player_position.x - this.Position.x;
+        target_position.y = player_position.y - this.Position.y; //add 50 for target buffer
         
         velocity.x = target_position.x > 0 ? speed : speed*-1;
-        //if spider is on an edge to the left
-        if(!castDownLeft.IsColliding() && castDownRight.IsColliding() && target_position.x < 0)
+        velocity.y = target_position.y > 0 ? speed : speed*-1;
+        //if bat is touching wall on right
+        if(!castLeft.IsColliding() && castRight.IsColliding() && target_position.x > 0)
         {
             velocity.x = 0;
         }
-        //if spider is on an edge to the right
-        else if(!castDownRight.IsColliding() && castDownLeft.IsColliding() && target_position.x > 0)
+        //if bat is touching wall on left
+        else if(!castRight.IsColliding() && castLeft.IsColliding() && target_position.x < 0)
         {
             velocity.x = 0;
         }
@@ -139,23 +121,6 @@ public class SpiderEnemy : KinematicBody2D
             }
             velocity = MoveAndSlide(velocity);
         }
-    }
-    
-    private bool ProcessTurn()
-    {
-        if(castLookAhead.IsColliding())
-        {
-            return true;
-        }
-        if(moveDirection == -1)
-        {
-            return (!castDownLeft.IsColliding());
-        }
-        else if(moveDirection == 1)
-        {
-            return (!castDownRight.IsColliding());
-        }
-        return false;
     }
 
     public void CheckAnimations(float delta)
@@ -186,15 +151,9 @@ public class SpiderEnemy : KinematicBody2D
             return;
         }
 
-        if(Position.DistanceTo(player_position) < follow_distance)
-        {
-            _animatedSprite.Play("run");
-        }
-        else
-        {
-            _animatedSprite.Play("idle");
-        }
-
+        //default animation for Bat whether it is chasing or not
+        _animatedSprite.Play("idle");
+        
         if(player_position.x > Position.x)
         {
             _animatedSprite.FlipH = true;
@@ -229,14 +188,11 @@ public class SpiderEnemy : KinematicBody2D
                 take_damage_timer.Start(); //start timer for taking damage animation
                 _animatedSprite.Play("take_damage");   
             } 
-            GD.Print("spider hit " + damage.ToString() + " (" + health.ToString() + " HP)");    
+            GD.Print("bat hit " + damage.ToString() + " (" + health.ToString() + " HP)");    
 
             //check if character died
             if (health <= 0 && !is_dead) {
                 Die();
-            } else { //character not dead, begin cooldown timer
-                //start cooldown timer for taking damage (player is immune for this duration)
-                take_damage_timer.Start();
             }
         }
     }
@@ -248,9 +204,10 @@ public class SpiderEnemy : KinematicBody2D
             death_timer.Start(); //begin timer for death animation 
             _animatedSprite.FlipV = true;
             _animatedSprite.Position = new Vector2(-1, 29);
-            sound.PlaySFX(10); //play spider death sound
+            sound.PlaySFX(10); //play bat death sound
         }
 
     }
+
 
 }

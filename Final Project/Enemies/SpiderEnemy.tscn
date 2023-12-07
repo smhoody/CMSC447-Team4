@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://Enemies/SpiderEnemy.cs" type="Script" id=1]
 [ext_resource path="res://resources/Enemies/Spider/spider_Sprites.png" type="Texture" id=2]
@@ -80,7 +80,7 @@ animations = [ {
 "frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ) ],
 "loop": true,
 "name": "attack",
-"speed": 5.0
+"speed": 7.0
 }, {
 "frames": [ SubResource( 9 ) ],
 "loop": true,
@@ -108,6 +108,9 @@ extents = Vector2( 24.0492, 10.336 )
 radius = 23.8068
 height = 14.7766
 
+[sub_resource type="Curve" id=19]
+_data = [ Vector2( 0, 0.904545 ), 0.0, -0.0734545, 0, 0, Vector2( 0.381188, 0.668182 ), 0.0, 0.0, 0, 0, Vector2( 0.935644, 0 ), 0.0, 0.0, 0, 0 ]
+
 [node name="SpiderEnemy" type="KinematicBody2D"]
 position = Vector2( -5, 0 )
 scale = Vector2( 1.21814, 1.21814 )
@@ -116,10 +119,12 @@ script = ExtResource( 1 )
 follow_distance = 300.0
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+light_mask = 4
 position = Vector2( -1, -6 )
 scale = Vector2( 0.11, 0.11 )
 frames = SubResource( 2 )
-animation = "idle"
+animation = "attack"
+frame = 1
 
 [node name="DownLeftRay" type="RayCast2D" parent="."]
 position = Vector2( -15, 16 )
@@ -157,7 +162,8 @@ collision_mask = 8
 script = ExtResource( 3 )
 
 [node name="SpiderHitboxCollision" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2( -3.52616, 10.336 )
+position = Vector2( -0.41, 10.336 )
+scale = Vector2( 1.179, 1.172 )
 shape = SubResource( 16 )
 
 [node name="Hurtbox" type="Area2D" parent="."]
@@ -166,8 +172,29 @@ collision_mask = 2
 script = ExtResource( 4 )
 
 [node name="SpiderHurtboxCollision" type="CollisionShape2D" parent="Hurtbox"]
-position = Vector2( -0.820923, 9.03016 )
+position = Vector2( -2.111, 9.03 )
 rotation = 1.5708
+scale = Vector2( 1, 1.241 )
 shape = SubResource( 15 )
+
+[node name="DeathParticles" type="CPUParticles2D" parent="."]
+position = Vector2( 2.37, 9.471 )
+emitting = false
+amount = 16
+lifetime = 0.4
+one_shot = true
+speed_scale = 0.4
+explosiveness = 1.0
+emission_shape = 1
+emission_sphere_radius = 3.0
+spread = 180.0
+initial_velocity = 73.39
+initial_velocity_random = 0.06
+scale_amount = 1.7
+scale_amount_curve = SubResource( 19 )
+color = Color( 0.929412, 0.54902, 0.521569, 1 )
+
+[node name="DeathTimer" type="Timer" parent="."]
+one_shot = true
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

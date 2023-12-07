@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project Revised\\Final Project.csproj": {}
+    "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project Revised\\Final Project.csproj": {
+    "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project Revised\\Final Project.csproj",
+        "projectUniqueName": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj",
         "projectName": "Final Project",
-        "projectPath": "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project Revised\\Final Project.csproj",
-        "packagesPath": "C:\\Users\\ronal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ronal\\Downloads\\CMSC447\\Projects\\Final Project Revised\\.mono\\temp\\obj\\",
+        "projectPath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\Final Project.csproj",
+        "packagesPath": "C:\\Users\\Steven\\.nuget\\packages\\",
+        "outputPath": "D:\\documents\\School stuff\\University\\UMBC\\6th Semester\\CMSC 447\\DatingSimulator\\Final Project\\Final Project\\.mono\\temp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ronal\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Steven\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net472"
@@ -41,11 +41,11 @@
             "Microsoft.NETFramework.ReferenceAssemblies": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[1.0.2, )",
+              "version": "[1.0.3, )",
               "autoReferenced": true
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.414\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

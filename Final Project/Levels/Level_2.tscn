@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://Misc/Torch_Left.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Misc/Torch_Right.tscn" type="PackedScene" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://Levels/Level_2.cs" type="Script" id=7]
 [ext_resource path="res://Levels/Fall_And_Reset.cs" type="Script" id=8]
 [ext_resource path="res://Enemies/PupEnemy.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Enemies/BatEnemy.tscn" type="PackedScene" id=10]
 [ext_resource path="res://HUD.tscn" type="PackedScene" id=12]
 
 [sub_resource type="StreamTexture" id=3]
@@ -204,7 +205,8 @@ position = Vector2( 7193, -95 )
 position = Vector2( 7449, -96 )
 
 [node name="Fall_Hitbox" type="Area2D" parent="."]
-position = Vector2( 2993, 1013 )
+position = Vector2( 2993, 1077.18 )
+scale = Vector2( 1, 0.392 )
 collision_layer = 2
 collision_mask = 2
 script = ExtResource( 8 )
@@ -230,6 +232,18 @@ scale = Vector2( 3.24631, 3.24631 )
 [node name="PupEnemy2" parent="." instance=ExtResource( 9 )]
 position = Vector2( 4926, 983 )
 scale = Vector2( 3.24631, 3.24631 )
+
+[node name="PupEnemy3" parent="." instance=ExtResource( 9 )]
+position = Vector2( 1800, 534 )
+scale = Vector2( 3.246, 3.246 )
+
+[node name="PupEnemy4" parent="." instance=ExtResource( 9 )]
+position = Vector2( 7350, -75 )
+scale = Vector2( 4.3, 4.3 )
+
+[node name="BatEnemy" parent="." instance=ExtResource( 10 )]
+position = Vector2( 179.474, 0 )
+scale = Vector2( 0.12, 0.12 )
 
 [connection signal="body_entered" from="Fall_Hitbox" to="Fall_Hitbox" method="_on_Fall_Hitbox_body_entered"]
 [connection signal="body_entered" from="Level_3_Hitbox" to="Level_3_Hitbox" method="_on_Level_3_Hitbox_body_entered"]

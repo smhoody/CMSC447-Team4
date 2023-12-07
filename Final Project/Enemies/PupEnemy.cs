@@ -12,7 +12,8 @@ public class PupEnemy : KinematicBody2D
     [Export] public float attack_speed = 500f;
     [Export] public float follow_distance = 500f;
     [Export] public float attack_distance = 180f;
-    [Export] public int damage = 2;
+    [Export] public int damage = 3;
+    [Export] public int health = 100;
 
 
     private int moveDirection = -1;
@@ -27,15 +28,22 @@ public class PupEnemy : KinematicBody2D
     private RayCast2D castDownLeft;
     private RayCast2D castLookAhead;
     private KinematicBody2D player;
-    public int health = 40;
+    
     public bool is_dead = false;
     public Timer take_damage_timer;
     private Hitbox hitbox;
     private CollisionShape2D hitbox_collision_obj;
     public bool attacking;
     public bool taking_damage;
+    private CPUParticles2D death_particles;
+    private Timer death_timer;
+    private SoundController sound;
+
     public override void _Ready()
     {
+        // Get SoundController Node for playing Spider sounds
+        sound = GetNode<SoundController>("/root/SoundController");
+        
         // Both used to check floor collisions
         castDownLeft = GetNode<RayCast2D>("DownLeftRay");
         castDownRight = GetNode<RayCast2D>("DownRightRay");
@@ -58,12 +66,16 @@ public class PupEnemy : KinematicBody2D
 
         //Received Damage Timer
         take_damage_timer = GetNode<Timer>("TakeDamageTimer");
-
+        
         // Pup hitbox
         hitbox = GetNode<Hitbox>("Hitbox");
         hitbox_collision_obj = hitbox.GetChild<CollisionShape2D>(0);
         // hitbox_collision_obj.Disabled = true;
         hitbox.setDamage(damage); //set attack damage for Pup
+
+        //Death sequence nodes
+        death_particles = GetNode<CPUParticles2D>("DeathParticles");
+        death_timer = GetNode<Timer>("DeathTimer");
 
     }
 
@@ -90,6 +102,8 @@ public class PupEnemy : KinematicBody2D
 
     public void HandleMovement(float delta)
     {
+        if (is_dead) {return;} //no moving during death animation
+
         float relative_speed = speed;
 
         player_position = player.Position;
@@ -153,6 +167,17 @@ public class PupEnemy : KinematicBody2D
 
     public void CheckAnimations(float delta)
     {
+        if (is_dead) { //if character has already died, play animation or remove the character
+            death_particles.Emitting = true;
+
+            //if the death animation is finished
+            if (death_timer.IsStopped()) {
+                QueueFree();
+            }
+
+            return; //return so that no other animation is played
+        }
+
         //if taking damage animation is not finished, don't process any other animation
         if (!take_damage_timer.IsStopped()) {return;}
 
@@ -210,17 +235,22 @@ public class PupEnemy : KinematicBody2D
             //check if character died
             if (health <= 0 && !is_dead) {
                 Die();
-            } else { //character not dead, begin cooldown timer
-                //start cooldown timer for taking damage (player is immune for this duration)
-                take_damage_timer.Start();
             }
         }
     }
 
     private void Die() {
-        GD.Print("pup dead");
-        is_dead = true;
-        QueueFree();
+        //if the character just died
+        if (!is_dead) {  
+            is_dead = true; //set dead flag to true
+            death_timer.Start(); //begin timer for death animation 
+            _animatedSprite.Animation = "idle";
+            _animatedSprite.Stop();
+            _animatedSprite.Frame = 1;
+            _animatedSprite.FlipV = true; //turn pup sprite upside down
+            _animatedSprite.Position = new Vector2(-1, 4.3f); //move it down so that it is laying on floor
+            sound.PlaySFX(10); //play spider death sound
+        }
 
     }
 
