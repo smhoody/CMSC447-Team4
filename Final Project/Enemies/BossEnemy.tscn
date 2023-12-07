@@ -1,33 +1,36 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=42 format=2]
 
 [ext_resource path="res://resources/Enemies/Boss/werewolf_Sprites.png" type="Texture" id=1]
+[ext_resource path="res://Hitbox.cs" type="Script" id=2]
+[ext_resource path="res://Hurtbox.cs" type="Script" id=3]
+[ext_resource path="res://Enemies/BossEnemy.cs" type="Script" id=4]
 
-[sub_resource type="AtlasTexture" id=1]
+[sub_resource type="AtlasTexture" id=35]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 0, 1173, 562, 391 )
 
-[sub_resource type="AtlasTexture" id=2]
+[sub_resource type="AtlasTexture" id=36]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 562, 1173, 562, 391 )
 
-[sub_resource type="AtlasTexture" id=3]
+[sub_resource type="AtlasTexture" id=37]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 1124, 1173, 562, 391 )
 
-[sub_resource type="AtlasTexture" id=4]
+[sub_resource type="AtlasTexture" id=38]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 1686, 1173, 562, 391 )
 
-[sub_resource type="AtlasTexture" id=5]
+[sub_resource type="AtlasTexture" id=39]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 2248, 1173, 562, 391 )
 
-[sub_resource type="AtlasTexture" id=6]
+[sub_resource type="AtlasTexture" id=40]
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 2810, 1173, 562, 391 )
@@ -61,16 +64,6 @@ region = Rect2( 2248, 1564, 562, 391 )
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 2810, 1564, 562, 391 )
-
-[sub_resource type="AtlasTexture" id=13]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 0, 1955, 562, 391 )
-
-[sub_resource type="AtlasTexture" id=14]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 562, 1955, 562, 391 )
 
 [sub_resource type="AtlasTexture" id=15]
 flags = 4
@@ -167,21 +160,26 @@ flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 3934, 391, 562, 391 )
 
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 1955, 562, 391 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 562, 1955, 562, 391 )
+
 [sub_resource type="SpriteFrames" id=34]
 animations = [ {
-"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
+"frames": [ SubResource( 35 ), SubResource( 36 ), SubResource( 37 ), SubResource( 38 ), SubResource( 39 ), SubResource( 40 ) ],
 "loop": true,
-"name": "attack 1",
+"name": "attack_1",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ) ],
 "loop": true,
 "name": "attack_2",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 13 ), SubResource( 14 ) ],
-"loop": true,
-"name": "damaged",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 15 ), SubResource( 16 ), SubResource( 17 ) ],
@@ -196,14 +194,84 @@ animations = [ {
 }, {
 "frames": [ SubResource( 26 ), SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 30 ), SubResource( 31 ), SubResource( 32 ), SubResource( 33 ) ],
 "loop": true,
-"name": "walking",
+"name": "run",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 13 ), SubResource( 14 ) ],
+"loop": true,
+"name": "take_damage",
 "speed": 5.0
 } ]
 
+[sub_resource type="RectangleShape2D" id=41]
+extents = Vector2( 51, 51.5 )
+
+[sub_resource type="RectangleShape2D" id=42]
+extents = Vector2( 62.5, 58 )
+
+[sub_resource type="CapsuleShape2D" id=43]
+radius = 77.0
+height = 22.0
+
 [node name="BossEnemy" type="KinematicBody2D"]
+collision_layer = 4
+script = ExtResource( 4 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-position = Vector2( 100.314, -70.0938 )
+position = Vector2( -94, -88 )
 scale = Vector2( 0.352462, 0.352462 )
 frames = SubResource( 34 )
 animation = "idle"
+centered = false
+
+[node name="DownLeftRay" type="RayCast2D" parent="."]
+position = Vector2( -55, 41 )
+enabled = true
+cast_to = Vector2( 0, 38 )
+
+[node name="DownRightRay" type="RayCast2D" parent="."]
+position = Vector2( 54, 40 )
+enabled = true
+cast_to = Vector2( 0, 38 )
+
+[node name="LookRay" type="RayCast2D" parent="."]
+position = Vector2( -7.62939e-06, -27 )
+scale = Vector2( 1.34016, 2.30316 )
+enabled = true
+cast_to = Vector2( 46, 0 )
+
+[node name="AttackDuration" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="AttackCooldown" type="Timer" parent="."]
+one_shot = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -1, -0.5 )
+shape = SubResource( 41 )
+
+[node name="TakeDamageTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 8
+script = ExtResource( 2 )
+
+[node name="BossHitboxCollision" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( -11.5, -7 )
+shape = SubResource( 42 )
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+script = ExtResource( 3 )
+
+[node name="BossHurtboxCollision" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2( -14, -9 )
+rotation = 1.5708
+shape = SubResource( 43 )
+
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

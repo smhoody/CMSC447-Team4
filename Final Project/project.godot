@@ -83,8 +83,10 @@ heavy_attack={
 [layer_names]
 
 2d_physics/layer_1="World"
-2d_physics/layer_2="Player"
-2d_physics/layer_3="Enemies"
+2d_physics/layer_2="Player hitbox"
+2d_physics/layer_3="Enemy hitbox"
+2d_physics/layer_4="Player hurtbox"
+2d_physics/layer_5="Enemy hurtbox"
 
 [mono]
 

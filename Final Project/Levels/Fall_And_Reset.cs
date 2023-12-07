@@ -1,13 +1,13 @@
 using Godot;
 using System;
 
-public class Fall_And_Reset : CollisionShape2D
+public class Fall_And_Reset : Area2D
 {
-    private void _on_Fall_Hitbox_area_entered(Area2D area)
+    private void _on_Fall_Hitbox_body_entered(Node body)
     {
-        if(area.GetParent() is Player)
+        if(body is Player)
         {
-            GetTree().ChangeScene("res://Level_2.tscn");    // if the player falls into the collision area, the level resets
+            GetTree().ChangeScene("res://Levels/Level_2.tscn");    // if the player falls into the collision area, the level resets
         }
     }
 }

@@ -1,16 +1,16 @@
 using Godot;
 using System;
 
-public class To_Level_2 : CollisionShape2D
+public class Level_2_Hitbox : Area2D
 {
-    private void _on_Hitbox_area_entered(Area2D area)
+
+    private void _on_Level_2_Hitbox_body_entered(Node body)
     {
-        if(area.GetParent() is Player)
+        if(body is Player)
         {
             SoundController sound = GetNode<SoundController>("/root/SoundController");
             sound.StopMusicPlayer();                        // stops current music
-            GetTree().ChangeScene("res://Level_2.tscn");    // changes current scene to level 2
+            GetTree().ChangeScene("res://Levels/Level_2.tscn");    // changes current scene to level 2
         }
     }
-
 }

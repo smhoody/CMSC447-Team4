@@ -75,7 +75,7 @@ public class MainMenu : MarginContainer
             case 0:
                 sound.StopMusicPlayer();
                 Input.MouseMode = Input.MouseModeEnum.Hidden;
-                GetTree().ChangeScene("res://Level_1.tscn");
+                GetTree().ChangeScene("res://Levels/Level_3.tscn");
                 break;
             case 1:
                 GetTree().ChangeScene("res://Menus/OptionsMenu.tscn");

@@ -9,6 +9,8 @@ public class SoundController : Node
     private AudioStreamPlayer level2_music;
     private AudioStreamPlayer level3_music;
     private AudioStreamPlayer confirm_sfx;
+    private AudioStreamPlayer damage_enemy_sfx;
+
     public override void _Ready()
     {
         // Loads each music file to the corresponding AudioStream
@@ -26,6 +28,9 @@ public class SoundController : Node
 
         confirm_sfx = GetNode<AudioStreamPlayer>("Confirm_SFX");
         confirm_sfx.Stream = GD.Load<AudioStream>("res://SFX/10_UI_Menu_SFX/013_Confirm_03.wav");
+        
+        damage_enemy_sfx = GetNode<AudioStreamPlayer>("Damage_Enemy_SFX");
+        damage_enemy_sfx.Stream = GD.Load<AudioStream>("res://SFX/12_Player_Movement_SFX/56_Attack_03.wav");
     }        
 
     public void StopMusicPlayer()
@@ -63,9 +68,13 @@ public class SoundController : Node
     {
         switch(sfx)
         {
-            case 0:
-                if(!confirm_sfx.Playing)
+            case 0: // Play menu selection SFX
+                if(!confirm_sfx.Playing)    
                     confirm_sfx.Play();
+                break;
+            case 1:
+                if(!damage_enemy_sfx.Playing)
+                    damage_enemy_sfx.Play();
                 break;
         }
     }
