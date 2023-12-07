@@ -16,6 +16,7 @@ public class VideoMenu : MarginContainer
 
     public override void _Process(float delta)
     {
+        SoundController sound = GetNode<SoundController>("/root/SoundController");
         if(Input.IsActionJustPressed("down"))
         {
             current_selection++;
@@ -34,6 +35,7 @@ public class VideoMenu : MarginContainer
         }
         else if(Input.IsActionJustPressed("ui_accept"))
         {
+            sound.PlaySFX(0);
             HandleSelection(current_selection);
         }
     }

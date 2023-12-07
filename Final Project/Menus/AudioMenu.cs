@@ -3,14 +3,17 @@ using System;
 
 public class AudioMenu : Control
 {
+    // Declares all node variables
     private Label selector_one, selector_two, selector_three, selector_four;
     private HSlider master_slider, music_slider, sfx_slider;
+    // Declares private variables
     private int master_index, music_index, sfx_index;
     private int current_selection = 0;
     private double slider_speed = 0.01;
 
     public override void _Ready()
     {
+        // Initializes all node variables to corresponding node
         selector_one = GetNode<Label>("HBoxContainer/Selectors/Selector");
         selector_two = GetNode<Label>("HBoxContainer/Selectors/Selector2");
         selector_three = GetNode<Label>("HBoxContainer/Selectors/Selector3");
@@ -25,10 +28,16 @@ public class AudioMenu : Control
         sfx_index = AudioServer.GetBusIndex("SFX");
 
         SetCurrentSelection(current_selection);
+
+        // saves the position of the slider values, so it's maintained when going back to Audio Menu
+        master_slider.Value = GameManager.pos_master;
+        music_slider.Value = GameManager.pos_music;
+        sfx_slider.Value = GameManager.pos_sfx;
     }
 
     public override void _Process(float delta)
     {
+        // Moves to next option, depending on keyboard down/up inputs
         if(Input.IsActionJustPressed("down"))
         {
             current_selection++;
@@ -45,10 +54,11 @@ public class AudioMenu : Control
             }
             SetCurrentSelection(current_selection);
         }
-            HandleSelection(current_selection);
+        HandleSelection(current_selection);
     }
     public void SetCurrentSelection(int current_selection)
     {
+        // Moves the ">" cursor to whatever menu selection is currently being hovered
         selector_one.Text = "";
         selector_two.Text = "";
         selector_three.Text = "";
@@ -72,6 +82,7 @@ public class AudioMenu : Control
     }
     public void HandleSelection(int current_selection)
     {
+        SoundController sound = GetNode<SoundController>("/root/SoundController");
         if(current_selection == 0)
         {
             if(Input.IsActionPressed("right"))
@@ -107,16 +118,20 @@ public class AudioMenu : Control
         }
         if(current_selection == 3 && Input.IsActionJustPressed("ui_accept"))
         {
+            sound.PlaySFX(0);
+            GameManager.pos_master = master_slider.Value;
+            GameManager.pos_music = music_slider.Value;
+            GameManager.pos_sfx = sfx_slider.Value;
             GetTree().ChangeScene("res://Menus/OptionsMenu.tscn");
         }
     }
     public void _on_slider_value_changed(float MyFloat, string slider)
     {
+        // Changes the actual Bus volumes for master, music, sfx
         switch(slider)
         {
             case "Master":
                 AudioServer.SetBusVolumeDb(master_index, GD.Linear2Db(MyFloat));
-                
                 break;
             case "Music":
                 AudioServer.SetBusVolumeDb(music_index, GD.Linear2Db(MyFloat));

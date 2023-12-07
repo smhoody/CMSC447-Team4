@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Adventurer.tres" type="DynamicFont" id=1]
-[ext_resource path="res://Adventurer.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Text/Adventurer.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Text/Adventurer.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://Menus/MainMenu.cs" type="Script" id=3]
 [ext_resource path="res://Menus/Background.tscn" type="PackedScene" id=4]
 

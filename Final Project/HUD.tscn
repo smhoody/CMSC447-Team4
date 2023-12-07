@@ -1,11 +1,13 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://DashCooldownLabel.cs" type="Script" id=1]
 [ext_resource path="res://resources/hearts2.png" type="Texture" id=2]
-[ext_resource path="res://resources/Character/dash_icon.png" type="Texture" id=3]
 [ext_resource path="res://HUD.cs" type="Script" id=4]
 [ext_resource path="res://recall_cooldown_label.cs" type="Script" id=5]
-[ext_resource path="res://resources/Character/recall_icon2.png" type="Texture" id=6]
+
+[sub_resource type="StreamTexture" id=9]
+flags = 4
+load_path = "res://.import/dash_icon.png-7dd5505a261d309fbf0ac3c5b82b3ad6.stex"
 
 [sub_resource type="StyleBoxFlat" id=7]
 bg_color = Color( 0.623529, 0.0392157, 0.0392157, 1 )
@@ -43,13 +45,33 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 494, 0, 246, 221 )
 
-[sub_resource type="SpriteFrames" id=6]
+[sub_resource type="SpriteFrames" id=10]
 animations = [ {
 "frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ) ],
 "loop": true,
 "name": "default",
 "speed": 5.0
 } ]
+
+[sub_resource type="SpriteFrames" id=11]
+animations = [ {
+"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="SpriteFrames" id=12]
+animations = [ {
+"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="StreamTexture" id=13]
+flags = 4
+load_path = "res://.import/recall_icon2.png-c6e678ba0e01f001c639e8a116fc77cf.stex"
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource( 4 )
@@ -59,7 +81,7 @@ script = ExtResource( 4 )
 [node name="dash_icon" type="Sprite" parent="dash_cooldown_panel"]
 position = Vector2( 41, 104 )
 scale = Vector2( 0.076965, 0.054553 )
-texture = ExtResource( 3 )
+texture = SubResource( 9 )
 
 [node name="dash_cooldown_label" type="ProgressBar" parent="dash_cooldown_panel"]
 margin_left = 56.0
@@ -83,19 +105,19 @@ custom_styles/panel = SubResource( 2 )
 [node name="heart1" type="AnimatedSprite" parent="health_bar"]
 position = Vector2( 35.5, 36.0625 )
 scale = Vector2( 0.231707, 0.22681 )
-frames = SubResource( 6 )
+frames = SubResource( 10 )
 offset = Vector2( 1.52588e-05, -39.6808 )
 
 [node name="heart2" type="AnimatedSprite" parent="health_bar"]
 position = Vector2( 93.5, 36.0625 )
 scale = Vector2( 0.231707, 0.22681 )
-frames = SubResource( 6 )
+frames = SubResource( 11 )
 offset = Vector2( 1.52588e-05, -39.6808 )
 
 [node name="heart3" type="AnimatedSprite" parent="health_bar"]
 position = Vector2( 151.5, 36.0625 )
 scale = Vector2( 0.231707, 0.22681 )
-frames = SubResource( 6 )
+frames = SubResource( 12 )
 offset = Vector2( 0, -39.681 )
 
 [node name="recall_cooldown_panel" type="Node" parent="."]
@@ -103,7 +125,7 @@ offset = Vector2( 0, -39.681 )
 [node name="recall_icon" type="Sprite" parent="recall_cooldown_panel"]
 position = Vector2( 42, 131 )
 scale = Vector2( 0.00540499, 0.00448643 )
-texture = ExtResource( 6 )
+texture = SubResource( 13 )
 
 [node name="recall_cooldown_label" type="ProgressBar" parent="recall_cooldown_panel"]
 margin_left = 56.0
