@@ -11,15 +11,13 @@ config_version=4
 [application]
 
 config/name="Final Project"
-run/main_scene="res://Game.tscn"
+run/main_scene="res://Levels/Game.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-MusicController="*res://MusicController.tscn"
-Player="*res://Player.tscn"
-HUD="*res://HUD.tscn"
-LayersAndMasks="*res://LayersAndMasks.cs"
+SoundController="*res://SoundController.tscn"
+GameManager="*res://Core/GameManager.cs"
 
 [debug]
 
@@ -85,9 +83,10 @@ heavy_attack={
 [layer_names]
 
 2d_physics/layer_1="World"
-2d_physics/layer_2="Player"
-2d_physics/layer_3="Enemies"
-2d_physics/layer_4="Hitbox"
+2d_physics/layer_2="Player hitbox"
+2d_physics/layer_3="Enemy hitbox"
+2d_physics/layer_4="Player hurtbox"
+2d_physics/layer_5="Enemy hurtbox"
 
 [mono]
 

@@ -1,0 +1,200 @@
+[gd_scene load_steps=24 format=2]
+
+[ext_resource path="res://Enemies/SpiderEnemy.cs" type="Script" id=1]
+[ext_resource path="res://resources/Enemies/Spider/spider_Sprites.png" type="Texture" id=2]
+[ext_resource path="res://Hitbox.cs" type="Script" id=3]
+[ext_resource path="res://Hurtbox.cs" type="Script" id=4]
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1000, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1500, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 2000, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 2500, 1000, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=10]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=11]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=12]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1000, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1500, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 2000, 500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=17]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 1500, 500, 500 )
+
+[sub_resource type="AtlasTexture" id=18]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 500, 1500, 500, 500 )
+
+[sub_resource type="SpriteFrames" id=2]
+animations = [ {
+"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ) ],
+"loop": true,
+"name": "attack",
+"speed": 7.0
+}, {
+"frames": [ SubResource( 9 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ) ],
+"loop": true,
+"name": "run",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 17 ), SubResource( 18 ) ],
+"loop": true,
+"name": "take_damage",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 17, 8.5 )
+
+[sub_resource type="RectangleShape2D" id=16]
+extents = Vector2( 24.0492, 10.336 )
+
+[sub_resource type="CapsuleShape2D" id=15]
+radius = 23.8068
+height = 14.7766
+
+[sub_resource type="Curve" id=19]
+_data = [ Vector2( 0, 0.904545 ), 0.0, -0.0734545, 0, 0, Vector2( 0.381188, 0.668182 ), 0.0, 0.0, 0, 0, Vector2( 0.935644, 0 ), 0.0, 0.0, 0, 0 ]
+
+[node name="SpiderEnemy" type="KinematicBody2D"]
+position = Vector2( -5, 0 )
+scale = Vector2( 1.21814, 1.21814 )
+collision_layer = 4
+script = ExtResource( 1 )
+follow_distance = 300.0
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+light_mask = 4
+position = Vector2( -1, -6 )
+scale = Vector2( 0.11, 0.11 )
+frames = SubResource( 2 )
+animation = "attack"
+frame = 1
+
+[node name="DownLeftRay" type="RayCast2D" parent="."]
+position = Vector2( -15, 16 )
+rotation = 1.5708
+enabled = true
+cast_to = Vector2( 20, 0 )
+
+[node name="DownRightRay" type="RayCast2D" parent="."]
+position = Vector2( 23, 16 )
+rotation = -1.5708
+enabled = true
+cast_to = Vector2( -20, 0 )
+
+[node name="LookRay" type="RayCast2D" parent="."]
+position = Vector2( 4, 12 )
+enabled = true
+cast_to = Vector2( 19, 0 )
+
+[node name="AttackDuration" type="Timer" parent="."]
+wait_time = 0.2
+
+[node name="AttackCooldown" type="Timer" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 4, 12.5 )
+shape = SubResource( 1 )
+
+[node name="TakeDamageTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 8
+script = ExtResource( 3 )
+
+[node name="SpiderHitboxCollision" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( -0.41, 10.336 )
+scale = Vector2( 1.179, 1.172 )
+shape = SubResource( 16 )
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+script = ExtResource( 4 )
+
+[node name="SpiderHurtboxCollision" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2( -2.111, 9.03 )
+rotation = 1.5708
+scale = Vector2( 1, 1.241 )
+shape = SubResource( 15 )
+
+[node name="DeathParticles" type="CPUParticles2D" parent="."]
+position = Vector2( 2.37, 9.471 )
+emitting = false
+amount = 16
+lifetime = 0.4
+one_shot = true
+speed_scale = 0.4
+explosiveness = 1.0
+emission_shape = 1
+emission_sphere_radius = 3.0
+spread = 180.0
+initial_velocity = 73.39
+initial_velocity_random = 0.06
+scale_amount = 1.7
+scale_amount_curve = SubResource( 19 )
+color = Color( 0.929412, 0.54902, 0.521569, 1 )
+
+[node name="DeathTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

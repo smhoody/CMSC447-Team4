@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://boss_health_bar.cs" type="Script" id=1]
+[ext_resource path="res://resources/bossHealthImage.png" type="Texture" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.623529, 0.0392157, 0.0392157, 1 )
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.290196, 0.00784314, 0.00784314, 0.388235 )
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="BossHealth" type="CanvasLayer"]
+
+[node name="health_panel" type="Node" parent="."]
+
+[node name="Sprite" type="Sprite" parent="health_panel"]
+position = Vector2( 567, 47 )
+scale = Vector2( 0.155157, 0.155157 )
+texture = ExtResource( 2 )
+
+[node name="boss_health_bar" type="ProgressBar" parent="health_panel"]
+margin_left = 602.0
+margin_top = 24.0
+margin_right = 1005.0
+margin_bottom = 70.0
+custom_colors/font_color = Color( 0.945098, 0.933333, 0.933333, 0 )
+custom_styles/fg = SubResource( 1 )
+custom_styles/bg = SubResource( 2 )
+max_value = 300.0
+value = 150.0
+percent_visible = false
+script = ExtResource( 1 )
